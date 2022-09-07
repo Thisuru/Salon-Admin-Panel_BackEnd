@@ -25,6 +25,28 @@ router.post('/', async (req, res) => {
     }
 })
 
-//get API (render the details page based on params id)
+//get the selected Client based on Params id 
+router.get('/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const result = await Client.findById(id)
+        res.send(result)
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+//delete selected Client 
+router.delete('/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const result = await Client.findByIdAndDelete(id)
+        res.send(result)
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 module.exports = router;
