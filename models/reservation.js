@@ -15,13 +15,13 @@ const reservationSchema = new Schema({
         ref: 'Stylist'
     },
     date: {
-        type: String,
-        require: true
-    },
-    time: {
-        type: String,
+        type: Date,
         require: true
     }
+    // time: {
+    //     type: String,
+    //     require: true
+    // }
 }, { timestamps: true });
 
 //creating the model

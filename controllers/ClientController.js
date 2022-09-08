@@ -1,9 +1,10 @@
 const Client = require('../models/client');
+const { getAll, getSingle, deleteClient, updateClient } = require('../services/clientService');
 
 //get all Clients
 const clientGetAll = async (req, res) => {
     try {
-        const result = await Client.find().sort({ createdAt: -1 })
+        const result = await getAll()
         res.send(result)
     } catch (error) {
         console.log(error);
@@ -16,7 +17,7 @@ const clientGetSingleClient = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const result = await Client.findById(id)
+        const result = await getSingle(id)
         if(!result){
             res.status(404).send({ message:`Not found user with id ${id}`})
         } else {
@@ -58,7 +59,7 @@ const clientDelete = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const result = await Client.findByIdAndDelete(id)
+        const result = await deleteClient(id)
         if(!result){
             res.status(404).send({ message:`Cannot Update user with ${id}. Maybe user not found!`})
         } else {
@@ -73,12 +74,13 @@ const clientDelete = async (req, res) => {
 //update selected client
 const clientUpdate = async (req, res) => {
     if(!res.body){
-        return res.status(400).send({message: 'Data to pdate can not be empty'})
+        return res.status(400).send({message: 'Data to update can not be empty'})
     }
-
+    console.log("Req body: ", req.body)
     const id = req.params.id;
 
     try {
+        // const result = await Client.findByIdAndUpdate(id, req.body, { useFindAndModify: false})
         const result = await Client.findByIdAndUpdate(id, req.body, { useFindAndModify: false})
         if(!result){
             res.status(404).send({ message:`Cannot Update user with ${id}. Maybe user not found!`})

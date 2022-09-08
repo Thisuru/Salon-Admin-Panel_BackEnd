@@ -1,4 +1,3 @@
-const { Types } = require('mongoose');
 const { getAll, createPost } = require('../services/reservationService');
 const { objectIdValider } = require('../services/objectIdValiderService');
 
