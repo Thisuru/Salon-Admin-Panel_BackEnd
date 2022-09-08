@@ -36,16 +36,17 @@ const clientCreatePost = async (req, res) => {
         return;
     }
 
-    const client = new Client({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        phonenumber: req.body.phonenumber,
-        email: req.body.email
-    });
-
      try {
+        const client = new Client({
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            phonenumber: req.body.phonenumber,
+            email: req.body.email
+        });
+
         const result = await client.save(client)
         res.send(result)
+        
     } catch (error) {
         console.log(error);
         res.status(500).send({message: error.message || "Error Update user information"})

@@ -18,6 +18,9 @@ const clientSchema = new Schema({
         type: String,
         require: true
     }
+    // reservation : [
+    //     { type: mongoose.Schema.Types.ObjectId, ref: 'Reservation'}
+    // ]
 }, { timestamps: true });
 
 //creating the model

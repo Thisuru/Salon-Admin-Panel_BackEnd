@@ -1,7 +1,9 @@
 const express = require('express');
 const morgan = require('morgan'); 
 const mongoose = require('mongoose');
-const clientRoutes = require('./routes/clientRoutes')
+const clientRoutes = require('./routes/clientRoutes');
+const stylistRoutes = require('./routes/stylistRoutes');
+const reservationRoutes = require('./routes/reservationRoutes');
 
 require('dotenv').config()
 
@@ -21,8 +23,6 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); 
 
-app.get('/', (req, res) => {
-    res.redirect('/clients');
-});
-
-app.use('/clients', clientRoutes)
+app.use('/api/v1/clients', clientRoutes)
+app.use('/api/v1/stylists', stylistRoutes)
+app.use('/api/v1/reservation', reservationRoutes)

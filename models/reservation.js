@@ -3,16 +3,16 @@ const Schema = mongoose.Schema;
 
 const reservationSchema = new Schema({
     client: {
-        type: String,
-        require: true
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Client'
     },
     service: {
         type: String,
         require: true
     },
     stylist: {
-        type: String,
-        require: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Stylist'
     },
     date: {
         type: String,
