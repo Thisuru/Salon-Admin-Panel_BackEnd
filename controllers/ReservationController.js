@@ -1,6 +1,6 @@
 const { Types } = require('mongoose');
-const Reservation = require('../models/reservation');
-const { getAll } = require('../services/reservationService');
+const { getAll, createPost } = require('../services/reservationService');
+const { objectIdValider } = require('../services/objectIdValiderService');
 
 //get all Reservation
 const reservationGetAll = async (req, res) => {
@@ -25,14 +25,10 @@ const reservationCreatePost = async (req, res) => {
 
         const reservation = req.body;
 
-        if(!Types.ObjectId.isValid(reservation.client)) {
-            throw new Error('client object id not passed')
-        }
-        if(!Types.ObjectId.isValid(reservation.stylist)){
-            throw new Error('client object id not passed')
-        }
-
-        const result = await Reservation.create(reservation)
+        objectIdValider(reservation.client, 'client');
+        objectIdValider(reservation.stylist, 'stylist');
+        
+        const result = await createPost(reservation)
         res.send(result)
 
     } catch (error) {
