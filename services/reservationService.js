@@ -6,7 +6,17 @@ const getAll = () => {
 }
 
 //Reservation create post API call service
-const createPost = (reservation) => {
+const createPost = (reqBody) => {
+
+    const reservation = new Reservation({
+        client: reqBody.client,
+        service: reqBody.service,
+        stylist:reqBody.stylist,
+        startTime: reqBody.startTime,
+        endTime: reqBody.endTime,
+        status: reqBody.status
+    })
+
     return Reservation.create(reservation)
 }
 

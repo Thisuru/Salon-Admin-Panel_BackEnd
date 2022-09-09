@@ -22,12 +22,12 @@ const reservationCreatePost = async (req, res) => {
 
      try {
 
-        const reservation = req.body;
+        const reqBody = req.body;
 
-        objectIdValider(reservation.client, 'client');
-        objectIdValider(reservation.stylist, 'stylist');
+        objectIdValider(reqBody.client, 'client');
+        objectIdValider(reqBody.stylist, 'stylist');
         
-        const result = await createPost(reservation)
+        const result = await createPost(reqBody)
         res.send(result)
 
     } catch (error) {

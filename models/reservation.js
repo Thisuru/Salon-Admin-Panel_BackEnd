@@ -14,14 +14,24 @@ const reservationSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Stylist'
     },
-    date: {
+    // date: {
+    //     type: Date,
+    //     require: true,
+    //     default: Date.now,
+    // },
+    startTime: {
         type: Date,
-        require: true
-    }
-    // time: {
-    //     type: String,
-    //     require: true
-    // }
+        require: true,
+    },
+    endTime: {
+        type: Date,
+        require: true,
+    },
+    status: {
+        type: String,
+        enum: ["pending", "inProgress", "completed", "cancelled", "deleted"],
+        default: "pending",
+    },
 }, { timestamps: true });
 
 //creating the model
