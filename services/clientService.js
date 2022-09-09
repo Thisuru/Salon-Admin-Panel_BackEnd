@@ -11,9 +11,17 @@ const getSingle = (id) => {
 }
 
 //Reservation create post API call service
-// const createPost = (requestBody) => {
-//     return client.save(requestBody)
-// }
+const createPost = (requestBody) => {
+
+    const client = new Client({
+        firstname: requestBody.firstname,
+        lastname: requestBody.lastname,
+        phonenumber: requestBody.phonenumber,
+        email: requestBody.email
+    });
+
+    return Client.create(client)
+}
 
 //Delete Client Service
 const deleteClient = (id) => {
@@ -28,6 +36,7 @@ const updateClient = (id, reqBody) => {
 module.exports = {
     getAll,
     getSingle,
+    createPost,
     deleteClient,
     updateClient
 }

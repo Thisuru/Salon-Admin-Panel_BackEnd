@@ -1,5 +1,5 @@
 const Client = require('../models/client');
-const { getAll, getSingle, deleteClient, updateClient } = require('../services/clientService');
+const { getAll, getSingle, deleteClient, createPost, updateClient } = require('../services/clientService');
 
 //get all Clients
 const clientGetAll = async (req, res) => {
@@ -38,14 +38,7 @@ const clientCreatePost = async (req, res) => {
     }
 
      try {
-        const client = new Client({
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            phonenumber: req.body.phonenumber,
-            email: req.body.email
-        });
-
-        const result = await client.save(client)
+        const result = await createPost(req.body)
         res.send(result)
         
     } catch (error) {
