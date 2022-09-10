@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan'); 
 const mongoose = require('mongoose');
+const cors = require('cors')
 
 const clientRoutes = require('./routes/clientRoutes');
 const stylistRoutes = require('./routes/stylistRoutes');
@@ -24,6 +25,8 @@ app.use(express.static('public'));
 app.use(morgan('dev'));  
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); 
+
+app.use(cors({credentials: true, origin: true}));
 
 app.use('/api/v1/clients', clientRoutes)
 app.use('/api/v1/stylists', stylistRoutes)

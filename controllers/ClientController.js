@@ -1,11 +1,26 @@
 const Client = require('../models/client');
-const { getAll, getSingle, deleteClient, createPost, updateClient } = require('../services/clientService');
+const { getAll, getAllClientCount, getSingle, deleteClient, createPost, updateClient } = require('../services/clientService');
 
 //get all Clients
 const clientGetAll = async (req, res) => {
     try {
-        const result = await getAll()
-        res.send(result)
+        const currentPage = req.query.page
+        const clients = await getAll(currentPage)
+        const totalPages = await getAllClientCount();
+
+        const response = {
+            clients : clients.map(client => ({
+                id: client._id, 
+                firstname: client.firstname, 
+                lastname: client.lastname, 
+                phonenumber: client.phonenumber, 
+                email: client.email}
+                )),
+            totalPages,
+            currentPage
+        }
+
+        res.send(response)
     } catch (error) {
         console.log(error);
         res.status(500).send({ message : error.message || "Error Occurred while retriving user information" })
