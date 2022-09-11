@@ -36,8 +36,30 @@ const stylistCreatePost = async (req, res) => {
     }  
 }
 
+const getAvailableStylish = async (req, res) => {
+    try {
+      const start = new Date(req.body.start); //"2022-09-18T09:15:55.970Z"
+      const end = new Date(req.body.end); //"2022-09-18T09:15:55.970Z"
+  
+      const resevedStylishIds = await getReservedStylishIds(start, end);
+  
+      console.log(resevedStylishIds);
+  
+      const availabelStylish = await getAvailableFromResevedIds(
+        resevedStylishIds
+      );
+  
+      res.send({ availabelStylish, resevedStylishIds });
+    } catch (error) {
+      res
+        .status(500)
+        .send({ message: error.message || "Error Update user information" });
+    }
+  };
+
 
 module.exports = {
     stylistGetAll,
-    stylistCreatePost
+    stylistCreatePost,
+    getAvailableStylish
 }

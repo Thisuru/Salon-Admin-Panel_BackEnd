@@ -1,11 +1,29 @@
-const { getAll, createPost } = require('../services/reservationService');
+const { getAll, getAllReservationCount, createPost } = require('../services/reservationService');
 const { objectIdValider } = require('../services/objectIdValiderService');
 
 //get all Reservation
 const reservationGetAll = async (req, res) => {
     try {
-        const result = await getAll()
-        res.send(result)
+        const currentPage = req.query.page
+        const reservations = await getAll(currentPage)
+        const totalPages = await getAllReservationCount();
+
+        const response = {
+            reservations : reservations.map(reservation => ({
+                id: reservation._id, 
+                client: reservation.client,
+                service: reservation.service,
+                stylist:reservation.stylist,
+                startTime: reservation.startTime,
+                endTime: reservation.endTime,
+                status: reservation.status
+            })),
+            totalPages,
+            currentPage
+        }
+
+        res.send(response)
+
     } catch (error) {
         console.log(error);
         res.status(500).send({ message : error.message || "Error Occurred while retriving user information" })
