@@ -1,5 +1,6 @@
-const { getAll, getAllReservationCount, getSingle, createPost, deleteReservation } = require('../services/reservationService');
+const { getAll, getAllReservationCount, getSingle, createPost, deleteReservation, updateReservation } = require('../services/reservationService');
 const { objectIdValider } = require('../services/objectIdValiderService');
+const Reservation = require('../models/reservation');
 
 //get all Reservation
 const reservationGetAll = async (req, res) => {
@@ -88,9 +89,32 @@ const reservationDelete = async (req, res) => {
     }
 }
 
+//update selected Reservation
+const reservationUpdate = async (req, res) => {
+    // if(!res.body){
+    //     return res.status(400).send({message: 'Data to update can not be empty'})
+    // }
+    console.log("Req body reservation: ", req.body)
+
+    try {
+        const id = req.params.id;
+        // const result = await Client.findByIdAndUpdate(id, req.body, { useFindAndModify: false})
+        const result = await Reservation.findByIdAndUpdate(id, req.body, { useFindAndModify: false})
+        if(!result){
+            res.status(404).send({ message:`Cannot Update user with ${id}. Maybe user not found!`})
+        } else {
+            res.send(result)
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({message: "Error Update user information"})
+    }
+}
+
 module.exports = {
     reservationCreatePost,
     reservationGetAll,
     reservationGetSingle,
-    reservationDelete
+    reservationDelete,
+    reservationUpdate
 }

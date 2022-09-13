@@ -44,15 +44,22 @@ const createPost = (reqBody) => {
     return Reservation.create(reservation)
 }
 
-//Delete Client Service
+//Delete reservation Service
 const deleteReservation = (id) => {
     return Reservation.findByIdAndDelete(id)
 }
+
+//update reservation Service
+const updateReservation = (id, reqBody) => {
+    return Reservation.findByIdAndUpdate(id, reqBody, { useFindAndModify: false })
+}
+
 
 module.exports = {
     getAll,
     getAllReservationCount,
     getSingle,
     createPost,
-    deleteReservation
+    deleteReservation,
+    updateReservation
 }
