@@ -69,7 +69,7 @@ const clientDelete = async (req, res) => {
     try {
         const result = await deleteClient(id)
         if(!result){
-            res.status(404).send({ message:`Cannot Update user with ${id}. Maybe user not found!`})
+            res.status(404).send({ message:`Cannot Delete user with ${id}. Maybe user not found!`})
         } else {
             res.send({ message: "User was deleted successfully!"})
         }

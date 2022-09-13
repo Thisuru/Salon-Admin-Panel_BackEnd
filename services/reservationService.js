@@ -24,6 +24,11 @@ const getAllReservationCount = () => {
     return Reservation.countDocuments();
 }
 
+//get single Reservation Service
+const getSingle = (id) => {
+    return Reservation.findById(id)
+}
+
 //Reservation create post API call service
 const createPost = (reqBody) => {
 
@@ -39,8 +44,15 @@ const createPost = (reqBody) => {
     return Reservation.create(reservation)
 }
 
+//Delete Client Service
+const deleteReservation = (id) => {
+    return Reservation.findByIdAndDelete(id)
+}
+
 module.exports = {
     getAll,
     getAllReservationCount,
-    createPost
+    getSingle,
+    createPost,
+    deleteReservation
 }

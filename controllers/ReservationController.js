@@ -1,4 +1,4 @@
-const { getAll, getAllReservationCount, createPost } = require('../services/reservationService');
+const { getAll, getAllReservationCount, getSingle, createPost, deleteReservation } = require('../services/reservationService');
 const { objectIdValider } = require('../services/objectIdValiderService');
 
 //get all Reservation
@@ -30,6 +30,23 @@ const reservationGetAll = async (req, res) => {
     }
 }
 
+//get the selected reservation based on Params id 
+const reservationGetSingle = async (req, res) => {
+
+    try {
+        const id = req.params.id;
+        const result = await getSingle(id)
+        if(!result){
+            res.status(404).send({ message:`Not found user with id ${id}`})
+        } else {
+            res.send(result)
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({message: `Erro retrieving user with id= ${id}`})
+    }
+}
+
 //Reservation create post API call (Save form data in db)
 const reservationCreatePost = async (req, res) => {
 
@@ -54,7 +71,26 @@ const reservationCreatePost = async (req, res) => {
     }  
 }
 
+//delete selected Reservation 
+const reservationDelete = async (req, res) => {
+
+    try {
+        const id = req.params.id;
+        const result = await deleteReservation(id)
+        if(!result){
+            res.status(404).send({ message:`Cannot Delete reservation with ${id}. Maybe user not found!`})
+        } else {
+            res.send({ message: "Reservation was deleted successfully!"})
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({message: `Could not delete reservation with id= ${id}`})
+    }
+}
+
 module.exports = {
     reservationCreatePost,
-    reservationGetAll
+    reservationGetAll,
+    reservationGetSingle,
+    reservationDelete
 }
