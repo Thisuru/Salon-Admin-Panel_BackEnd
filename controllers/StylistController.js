@@ -1,4 +1,7 @@
 const Stylist = require('../models/stylist');
+const { getReservedStylishIds } = require("../services/reservationService");
+const { getAvailableFromResevedIds } = require("../services/stylishService");
+
 
 //get all Stylists
 const stylistGetAll = async (req, res) => {

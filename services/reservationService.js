@@ -54,6 +54,28 @@ const updateReservation = (id, reqBody) => {
     return Reservation.findByIdAndUpdate(id, reqBody, { useFindAndModify: false })
 }
 
+//get reserved stylist Ids
+const getReservedStylishIds = (start, end) => {
+    return Reservation.distinct("stylist", {
+      $and: [
+        {
+          startTime: {
+            $lte: start,
+          },
+          endTime: {
+            $gte: start,
+          },
+          startTime: {
+            $lte: end,
+          },
+          endTime: {
+            $gte: end,
+          },
+        },
+      ],
+    });
+  };
+
 
 module.exports = {
     getAll,
@@ -61,5 +83,6 @@ module.exports = {
     getSingle,
     createPost,
     deleteReservation,
-    updateReservation
+    updateReservation,
+    getReservedStylishIds
 }
