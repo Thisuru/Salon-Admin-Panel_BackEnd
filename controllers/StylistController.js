@@ -33,7 +33,7 @@ const stylistCreatePost = async (req, res) => {
         const result = await client.save(client)
         res.send(result)
         
-    } catch (error) {
+    } catch (error) {node
         console.log(error);
         res.status(500).send({message: error.message || "Error Update user information"})
     }  

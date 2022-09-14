@@ -1,23 +1,23 @@
 const Client = require('../models/client');
-const { getAll, getAllClientCount, getSingle, deleteClient, createPost, updateClient } = require('../services/clientService');
+const { getAll, getSingle, deleteClient, createPost, updateClient } = require('../services/clientService');
 
 //get all Clients
 const clientGetAll = async (req, res) => {
     try {
-        const currentPage = req.query.page
-        const clients = await getAll(currentPage)
-        const totalPages = await getAllClientCount();
+        const params = req.query
+        const {data, count} = await getAll(params)
 
+        console.log("data1: ", data);
         const response = {
-            clients : clients.map(client => ({
+            clients : data.map(client => ({
                 id: client._id, 
                 firstname: client.firstname, 
                 lastname: client.lastname, 
                 phonenumber: client.phonenumber, 
                 email: client.email}
                 )),
-            totalPages,
-            currentPage
+            totalPages : count,
+            currentPage : params?.page
         }
 
         res.send(response)

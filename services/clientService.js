@@ -1,22 +1,36 @@
 const Client = require('../models/client');
 
 //get all Clients service
-const getAll = (paramsPage) => {
+const getAll = async (params) => {
     // return Client.find().sort({ createdAt: -1 })
+    let filters = {}
 
-    const page = Math.max(0, paramsPage)
+    if (params?.search) {
+        const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
+        const searchRgx = rgx(params.search);
+
+        filters.$or = [
+            { firstname: { $regex: searchRgx, $options: "i" } },
+            { lastname: { $regex: searchRgx, $options: "i" } },
+            { phonenumber: { $regex: searchRgx, $options: "i" } },
+            { email: { $regex: searchRgx, $options: "i" } }
+        ]
+    }
+
+    const page = Math.max(0, params?.page || 1)
     const perPage = 30;
-    const client = Client.find()
+    const client = Client.collection.find(filters)
+
+    const resultCount = await client.count();
 
     if (perPage) {
-        console.log("PErpage", perPage);
-        console.log("ParamsPageee", paramsPage);
-        client.limit(perPage* 1)
+        console.log("ParamsPageee", params?.page || 1);
+        client.limit(perPage * 1)
     }
     if (page) {
-        client.skip(perPage * (page-1))
+        client.skip(perPage * (page - 1))
     }
-    return client.exec()
+    return {data : await client.toArray(), count: resultCount}
 }
 
 //All Client Count
