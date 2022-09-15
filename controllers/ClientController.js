@@ -81,9 +81,9 @@ const clientDelete = async (req, res) => {
 
 //update selected client
 const clientUpdate = async (req, res) => {
-    if(!res.body){
-        return res.status(400).send({message: 'Data to update can not be empty'})
-    }
+    // if(!res.body){
+    //     return res.status(400).send({message: 'Data to update can not be empty'})
+    // }
     console.log("Req body: ", req.body)
     const id = req.params.id;
 

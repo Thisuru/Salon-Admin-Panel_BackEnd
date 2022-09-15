@@ -24,6 +24,11 @@ const getAllReservationCount = () => {
     return Reservation.countDocuments();
 }
 
+//Completed Reservation Count
+const getCompletedReservationCount = () => {
+    return Reservation.countDocuments({status: 'completed'});
+}
+
 //get single Reservation Service
 const getSingle = (id) => {
     return Reservation.findById(id)
@@ -84,5 +89,6 @@ module.exports = {
     createPost,
     deleteReservation,
     updateReservation,
-    getReservedStylishIds
+    getReservedStylishIds,
+    getCompletedReservationCount
 }

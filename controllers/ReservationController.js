@@ -1,4 +1,4 @@
-const { getAll, getAllReservationCount, getSingle, createPost, deleteReservation, updateReservation } = require('../services/reservationService');
+const { getAll, getAllReservationCount, getCompletedReservationCount, getSingle, createPost, deleteReservation, updateReservation } = require('../services/reservationService');
 const { objectIdValider } = require('../services/objectIdValiderService');
 const Reservation = require('../models/reservation');
 
@@ -111,10 +111,44 @@ const reservationUpdate = async (req, res) => {
     }
 }
 
+//get all reservation count
+const getAllReservationCountController  = async (req, res) => {
+    try {
+        const totalReservations = await getAllReservationCount();
+        const response = {
+            totalCount : totalReservations
+        }
+        console.log("Reservation count: ", totalReservations);
+        res.send(response)
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message : error.message || "Error Occurred while retriving reservation information" })
+    }
+}
+
+//get completed Reservation Count
+const getCompletedReservationCountController  = async (req, res) => {
+    try {
+        const completedReservations = await getCompletedReservationCount();
+        const response = {
+            completedCount : completedReservations
+        }
+        console.log("Completed Reservation count: ", completedReservations);
+        res.send(response)
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message : error.message || "Error Occurred while retriving reservation information" })
+    }
+}
+
 module.exports = {
     reservationCreatePost,
     reservationGetAll,
     reservationGetSingle,
     reservationDelete,
-    reservationUpdate
+    reservationUpdate,
+    getAllReservationCountController,
+    getCompletedReservationCountController
 }
