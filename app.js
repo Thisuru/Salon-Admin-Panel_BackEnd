@@ -7,6 +7,7 @@ const clientRoutes = require('./routes/clientRoutes');
 const stylistRoutes = require('./routes/stylistRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const emailRoutes = require('./routes/emailRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 require('dotenv').config()
 
@@ -32,3 +33,5 @@ app.use('/api/v1/clients', clientRoutes)
 app.use('/api/v1/stylists', stylistRoutes)
 app.use('/api/v1/reservation', reservationRoutes)
 app.use('/api/v1/sendEmail', emailRoutes)
+app.use('/api/v1/user', userRoutes)
+app.use('/api/v1/user', userRoutes)
