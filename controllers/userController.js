@@ -35,7 +35,7 @@ const userRegister = async (req, res) => {
         const user = await getUserByUsername(username);
 
         if (user) {
-            return res.status(200).json({ status: false, message: 'Aleady Registered' });
+            return res.status(200).json({ status: false, message: 'This user is already registered' });
         }
 
         const salt = await bcrypt.genSalt()
@@ -46,6 +46,7 @@ const userRegister = async (req, res) => {
             password: hashedPassword
         }
         const result = await createUser(userData)
+        console.log("Result: ", result);
 
         res.json({ status: true, message: "User has been saved" });
 
