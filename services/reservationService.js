@@ -81,7 +81,15 @@ const getReservedStylishIds = (start, end) => {
     });
   };
 
-
+  //update reservation status service
+  const updateReservationStatus = (status, id) => {
+    console.log("Status: ", status);
+    return Reservation.findOneAndUpdate(
+      { _id: id },
+      { $set: { status: status } }
+    );
+  };
+  
 module.exports = {
     getAll,
     getAllReservationCount,
@@ -90,5 +98,6 @@ module.exports = {
     deleteReservation,
     updateReservation,
     getReservedStylishIds,
-    getCompletedReservationCount
+    getCompletedReservationCount,
+    updateReservationStatus
 }

@@ -1,4 +1,4 @@
-const { getAll, getAllReservationCount, getCompletedReservationCount, getSingle, createPost, deleteReservation, updateReservation } = require('../services/reservationService');
+const { getAll, getAllReservationCount, getCompletedReservationCount, getSingle, createPost, deleteReservation, updateReservation, updateReservationStatus } = require('../services/reservationService');
 const { objectIdValider } = require('../services/objectIdValiderService');
 const Reservation = require('../models/reservation');
 
@@ -143,12 +143,37 @@ const getCompletedReservationCountController  = async (req, res) => {
     }
 }
 
+//Update Reservation status by admin
+const updateStatus = async (req, res) => {
+    console.log("STATUS: ", req.body);
+    const status = req.body.status;
+    const id = req.body.id;
+  
+    // if (!reservationStatus.includes(status)) {
+    //   res.status(400).send({ message: "Invalid status!" });
+    //   return;
+    // }
+  
+    const result = await updateReservationStatus(status, id);
+  
+    if (result == null) {
+      res.status(200).send({ message: "Reservation status is failed" });
+      return;
+    }
+  
+    res
+      .status(200)
+      .send({ message: "Reservation status is updated", data: result });
+  };
+
 module.exports = {
     reservationCreatePost,
     reservationGetAll,
     reservationGetSingle,
     reservationDelete,
+    updateStatus,
     reservationUpdate,
     getAllReservationCountController,
-    getCompletedReservationCountController
+    getCompletedReservationCountController,
+    
 }
