@@ -1,9 +1,10 @@
 const express = require('express');
 const { reservationGetAll, reservationCreatePost, reservationGetSingle, reservationDelete, reservationUpdate, getAllReservationCountController, getCompletedReservationCountController } = require('../controllers/ReservationController');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 
-router.get('/', reservationGetAll);
+router.get('/', auth, reservationGetAll);
 router.get('/allcount', getAllReservationCountController)
 router.get('/completedcount', getCompletedReservationCountController)
 router.post('/', reservationCreatePost);
