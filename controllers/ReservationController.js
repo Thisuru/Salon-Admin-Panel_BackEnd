@@ -5,12 +5,13 @@ const Reservation = require('../models/reservation');
 //get all Reservation
 const reservationGetAll = async (req, res) => {
     try {
-        const currentPage = req.query.page
-        const reservations = await getAll(currentPage)
+        // const currentPage = req.query.page
+        const params = req.query
+        const {data} = await getAll(params)
         const totalPages = await getAllReservationCount();
 
         const response = {
-            reservations : reservations.map(reservation => ({
+            reservations : data.map(reservation => ({
                 id: reservation._id, 
                 client: reservation.client,
                 service: reservation.service,
@@ -20,7 +21,7 @@ const reservationGetAll = async (req, res) => {
                 status: reservation.status
             })),
             totalPages,
-            currentPage
+            currentPage : params?.page
         }
 
         res.send(response)

@@ -1,21 +1,37 @@
 const Reservation = require('../models/reservation');
 
 //get all Reservation service
-const getAll = (paramsPage) => {
+const getAll = async (params) => {
+
+    let filters = {}
+
+    if (params?.search) {
+      const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
+      const searchRgx = rgx(params.search);
+
+      filters.$or = [
+          { service: { $regex: searchRgx, $options: "i" } },
+          // { lastname: { $regex: searchRgx, $options: "i" } },
+          // { phonenumber: { $regex: searchRgx, $options: "i" } },
+          // { email: { $regex: searchRgx, $options: "i" } }
+      ]
+  }
     
-    const page = Math.max(0, paramsPage)
+    const page = Math.max(0, params?.page || 1)
     const perPage = 30;
-    const reservation = Reservation.find().populate('client').populate('stylist')
+    // const reservation = Reservation.find().populate('client').populate('stylist')
+    const reservation = Reservation.find(filters).populate('client').populate('stylist')
 
     if (perPage) {
-        console.log("Perpage: ", perPage);
-        console.log("ParamsPage: ", paramsPage);
-        reservation.limit(perPage* 1)
+        
+        console.log("ParamsPage: ", params?.page || 1);
+        reservation.limit(perPage * 1)
     }
     if (page) {
         reservation.skip(perPage * (page-1))
     }
-    return reservation.exec()
+    // return reservation.exec()
+    return {data : await reservation}
     // return Reservation.find().populate('client').populate('stylist')
 }
 
