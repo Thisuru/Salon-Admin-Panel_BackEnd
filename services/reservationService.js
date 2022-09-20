@@ -11,8 +11,8 @@ const getAll = async (params) => {
 
       filters.$or = [
           { service: { $regex: searchRgx, $options: "i" } },
-          // { lastname: { $regex: searchRgx, $options: "i" } },
-          // { phonenumber: { $regex: searchRgx, $options: "i" } },
+          { status: { $regex: searchRgx, $options: "i" } },
+          // { firstname: { $regex: searchRgx, $options: "i" } },
           // { email: { $regex: searchRgx, $options: "i" } }
       ]
   }

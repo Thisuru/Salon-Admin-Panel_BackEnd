@@ -11,13 +11,13 @@ const userLogin = async (req, res) => {
     const user = await getUserByUsername(username);
 
     if (!user) {
-        return res.status(200).json({ status: false, message: 'Sorry you do not have an account' });
+        return res.status(203).json({ status: false, message: 'Sorry you do not have an account' });
     }
 
     const is_authnticted = await bcrypt.compare(password, user.password);
 
     if (!is_authnticted) {
-        return res.status(200).json({ status: false, message: 'Your user name or password incorrect' });
+        return res.status(203).json({ status: false, message: 'Your user name or password incorrect' });
     }
     const accessToken = jwt.sign({ user: user.Name }, process.env.SECRET_KEY);
 
@@ -35,7 +35,7 @@ const userRegister = async (req, res) => {
         const user = await getUserByUsername(username);
 
         if (user) {
-            return res.status(200).json({ status: false, message: 'This user is already registered' });
+            return res.status(203).json({ status: false, message: 'This user is already registered' });
         }
 
         const salt = await bcrypt.genSalt()

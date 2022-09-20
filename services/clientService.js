@@ -43,6 +43,13 @@ const getSingle = (id) => {
     return Client.findById(id)
 }
 
+//get Client by Email
+const getClientByEmail = (email) => {
+    return Client.findOne({
+        email : email
+    })
+}
+
 //Reservation create post API call service
 const createPost = (requestBody) => {
 
@@ -72,5 +79,6 @@ module.exports = {
     getAllClientCount,
     createPost,
     deleteClient,
-    updateClient
+    updateClient,
+    getClientByEmail
 }
