@@ -1,4 +1,14 @@
-const { getAll, getAllReservationCount, getCompletedReservationCount, getSingle, createPost, deleteReservation, updateReservation, updateReservationStatus } = require('../services/reservationService');
+const { getAll, 
+        getAllReservationCount, 
+        getCompletedReservationCount, 
+        getSingle, 
+        createPost, 
+        deleteReservation, 
+        updateReservation, 
+        updateReservationStatus,
+        updateReservationDateForDragDrop
+       } = require('../services/reservationService');
+
 const { objectIdValider } = require('../services/objectIdValiderService');
 const Reservation = require('../models/reservation');
 
@@ -167,6 +177,25 @@ const updateStatus = async (req, res) => {
       .send({ message: "Reservation status is updated", data: result });
   };
 
+  //Update Reservation date by admin
+const updateReservationByCalendarDragDrop = async (req, res) => {
+    console.log("Calendar Drag drop: ", req.body);
+    const id = req.body.id;
+    const startTime = req.body.startTime;
+    const endTime = req.body.endTime
+  
+    const result = await updateReservationDateForDragDrop(startTime, endTime, id);
+  
+    if (result == null) {
+      res.status(203).send({ message: "Reservation Date update is failed" });
+      return;
+    }
+  
+    res
+      .status(200)
+      .send({ message: "Reservation date is updated", data: result });
+  };
+
 module.exports = {
     reservationCreatePost,
     reservationGetAll,
@@ -176,5 +205,5 @@ module.exports = {
     reservationUpdate,
     getAllReservationCountController,
     getCompletedReservationCountController,
-    
+    updateReservationByCalendarDragDrop
 }

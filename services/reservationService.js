@@ -105,6 +105,17 @@ const getReservedStylishIds = (start, end) => {
       { $set: { status: status } }
     );
   };
+
+  //Update Reservation date service
+  const updateReservationDateForDragDrop = (startTime, endTime, id) => {
+    console.log("startTime service: ", startTime);
+    console.log("endTime service: ", endTime);
+    console.log("id service: ", id);
+    return Reservation.findOneAndUpdate(
+      { _id: id },
+      { $set: { startTime: startTime, endTime: endTime } }
+    );
+  };
   
 module.exports = {
     getAll,
@@ -115,5 +126,6 @@ module.exports = {
     updateReservation,
     getReservedStylishIds,
     getCompletedReservationCount,
-    updateReservationStatus
+    updateReservationStatus,
+    updateReservationDateForDragDrop
 }
