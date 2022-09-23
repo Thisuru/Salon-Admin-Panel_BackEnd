@@ -18,14 +18,15 @@ const reservationGetAll = async (req, res) => {
         // const currentPage = req.query.page
         const params = req.query
         const {data} = await getAll(params)
+        console.log("DATA: ", data);
         const totalPages = await getAllReservationCount();
 
         const response = {
             reservations : data.map(reservation => ({
                 id: reservation._id, 
-                client: reservation.client,
+                client: reservation.clients,
                 service: reservation.service,
-                stylist:reservation.stylist,
+                stylist:reservation.stylists,
                 startTime: reservation.startTime,
                 endTime: reservation.endTime,
                 status: reservation.status
