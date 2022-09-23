@@ -100,20 +100,26 @@ const clientDelete = async (req, res) => {
 
 //update selected client
 const clientUpdate = async (req, res) => {
-    // if(!res.body){
-    //     return res.status(400).send({message: 'Data to update can not be empty'})
-    // }
-    console.log("Req body: ", req.body)
     const id = req.params.id;
 
     try {
-        // const result = await Client.findByIdAndUpdate(id, req.body, { useFindAndModify: false})
-        const result = await Client.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-        if (!result) {
-            res.status(404).send({ message: `Cannot Update user with ${id}. Maybe user not found!` })
+        const user = await getClientByEmail(req.body.email)
+
+        if (user) {
+            return res.status(203).json({
+                status: false,
+                message: 'This email is already in use.'
+            });
         } else {
-            res.send(result)
+            // const result = await Client.findByIdAndUpdate(id, req.body, { useFindAndModify: false})
+            const result = await Client.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+            if (!result) {
+                res.status(404).send({ message: `Cannot Update user with ${id}. Maybe user not found!` })
+            } else {
+                res.send(result)
+            }
         }
+
     } catch (error) {
         console.log(error);
         res.status(500).send({ message: "Error Update user information" })
