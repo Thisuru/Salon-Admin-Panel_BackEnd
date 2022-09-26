@@ -3,7 +3,7 @@ const Reservation = require('../models/reservation');
 //get all Reservation service
 const getAll = async (params) => {
   const sort = 'NEWEST';
-  const limit = 20;
+  const limit = 30;
   // const sort = params?.sort;
   // const limit = params?.limit
   const search = params?.search;
@@ -164,15 +164,39 @@ const updateReservationStatus = (status, id) => {
 };
 
 //Update Reservation date service
-const updateReservationDateForDragDrop = (startTime, endTime, id) => {
+const updateReservationDateForDragDrop = (startTime, endTime, id, stylist) => {
   console.log("startTime service: ", startTime);
   console.log("endTime service: ", endTime);
   console.log("id service: ", id);
+  console.log("stylist service: ", stylist);
+
   return Reservation.findOneAndUpdate(
     { _id: id },
     { $set: { startTime: startTime, endTime: endTime } }
   );
 };
+
+//Get Reservation By stylist id (Drag drop calnedar Validation)
+const getReservationByReservationDetails = ( NewStartTime, NewEndTime, stylist ) => {
+  return Reservation.distinct("stylist", {
+    $and: [
+      {
+        startTime: {
+          $lte: NewStartTime,
+        },
+        endTime: {
+          $gte: NewStartTime,
+        },
+        startTime: {
+          $lte: NewEndTime,
+        },
+        endTime: {
+          $gte: NewEndTime,
+        }
+      },
+    ],
+  });
+}
 
 module.exports = {
   getAll,
@@ -184,5 +208,6 @@ module.exports = {
   getReservedStylishIds,
   getCompletedReservationCount,
   updateReservationStatus,
-  updateReservationDateForDragDrop
+  updateReservationDateForDragDrop,
+  getReservationByReservationDetails
 }

@@ -1,13 +1,14 @@
-const { getAll, 
-        getAllReservationCount, 
-        getCompletedReservationCount, 
-        getSingle, 
-        createPost, 
-        deleteReservation, 
-        updateReservation, 
-        updateReservationStatus,
-        updateReservationDateForDragDrop
-       } = require('../services/reservationService');
+const { getAll,
+    getAllReservationCount,
+    getCompletedReservationCount,
+    getSingle,
+    createPost,
+    deleteReservation,
+    updateReservation,
+    updateReservationStatus,
+    updateReservationDateForDragDrop,
+    getReservationByReservationDetails
+} = require('../services/reservationService');
 
 const { objectIdValider } = require('../services/objectIdValiderService');
 const Reservation = require('../models/reservation');
@@ -17,29 +18,29 @@ const reservationGetAll = async (req, res) => {
     try {
         // const currentPage = req.query.page
         const params = req.query
-        const {data} = await getAll(params)
+        const { data } = await getAll(params)
         console.log("DATA: ", data);
         const totalPages = await getAllReservationCount();
 
         const response = {
-            reservations : data.map(reservation => ({
-                id: reservation._id, 
+            reservations: data.map(reservation => ({
+                id: reservation._id,
                 client: reservation.clients,
                 service: reservation.service,
-                stylist:reservation.stylists,
+                stylist: reservation.stylists,
                 startTime: reservation.startTime,
                 endTime: reservation.endTime,
                 status: reservation.status
             })),
             totalPages,
-            currentPage : params?.page
+            currentPage: params?.page
         }
 
         res.send(response)
 
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message : error.message || "Error Occurred while retriving user information" })
+        res.status(500).send({ message: error.message || "Error Occurred while retriving user information" })
     }
 }
 
@@ -49,39 +50,39 @@ const reservationGetSingle = async (req, res) => {
     try {
         const id = req.params.id;
         const result = await getSingle(id)
-        if(!result){
-            res.status(404).send({ message:`Not found user with id ${id}`})
+        if (!result) {
+            res.status(404).send({ message: `Not found user with id ${id}` })
         } else {
             res.send(result)
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send({message: `Erro retrieving user with id= ${id}`})
+        res.status(500).send({ message: `Erro retrieving user with id= ${id}` })
     }
 }
 
 //Reservation create post API call (Save form data in db)
 const reservationCreatePost = async (req, res) => {
 
-    if(!req.body){
-        res.status(400).send({ message : "Content can not be empty!"});
+    if (!req.body) {
+        res.status(400).send({ message: "Content can not be empty!" });
         return;
     }
 
-     try {
+    try {
 
         const reqBody = req.body;
 
         objectIdValider(reqBody.client, 'client');
         objectIdValider(reqBody.stylist, 'stylist');
-        
+
         const result = await createPost(reqBody)
         res.send(result)
 
     } catch (error) {
         console.log(error);
-        res.status(500).send({message: error.message || "Error Update user information"})
-    }  
+        res.status(500).send({ message: error.message || "Error Update user information" })
+    }
 }
 
 //delete selected Reservation 
@@ -90,14 +91,14 @@ const reservationDelete = async (req, res) => {
     try {
         const id = req.params.id;
         const result = await deleteReservation(id)
-        if(!result){
-            res.status(404).send({ message:`Cannot Delete reservation with ${id}. Maybe user not found!`})
+        if (!result) {
+            res.status(404).send({ message: `Cannot Delete reservation with ${id}. Maybe user not found!` })
         } else {
-            res.send({ message: "Reservation was deleted successfully!"})
+            res.send({ message: "Reservation was deleted successfully!" })
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send({message: `Could not delete reservation with id= ${id}`})
+        res.status(500).send({ message: `Could not delete reservation with id= ${id}` })
     }
 }
 
@@ -111,47 +112,47 @@ const reservationUpdate = async (req, res) => {
     try {
         const id = req.params.id;
         // const result = await Client.findByIdAndUpdate(id, req.body, { useFindAndModify: false})
-        const result = await Reservation.findByIdAndUpdate(id, req.body, { useFindAndModify: false})
-        if(!result){
-            res.status(404).send({ message:`Cannot Update user with ${id}. Maybe user not found!`})
+        const result = await Reservation.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+        if (!result) {
+            res.status(404).send({ message: `Cannot Update user with ${id}. Maybe user not found!` })
         } else {
             res.send(result)
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send({message: "Error Update user information"})
+        res.status(500).send({ message: "Error Update user information" })
     }
 }
 
 //get all reservation count
-const getAllReservationCountController  = async (req, res) => {
+const getAllReservationCountController = async (req, res) => {
     try {
         const totalReservations = await getAllReservationCount();
         const response = {
-            totalCount : totalReservations
+            totalCount: totalReservations
         }
         console.log("Reservation count: ", totalReservations);
         res.send(response)
-        
+
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message : error.message || "Error Occurred while retriving reservation information" })
+        res.status(500).send({ message: error.message || "Error Occurred while retriving reservation information" })
     }
 }
 
 //get completed Reservation Count
-const getCompletedReservationCountController  = async (req, res) => {
+const getCompletedReservationCountController = async (req, res) => {
     try {
         const completedReservations = await getCompletedReservationCount();
         const response = {
-            completedCount : completedReservations
+            completedCount: completedReservations
         }
         console.log("Completed Reservation count: ", completedReservations);
         res.send(response)
-        
+
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message : error.message || "Error Occurred while retriving reservation information" })
+        res.status(500).send({ message: error.message || "Error Occurred while retriving reservation information" })
     }
 }
 
@@ -160,42 +161,71 @@ const updateStatus = async (req, res) => {
     console.log("STATUS: ", req.body);
     const status = req.body.status;
     const id = req.body.id;
-  
+
     // if (!reservationStatus.includes(status)) {
     //   res.status(400).send({ message: "Invalid status!" });
     //   return;
     // }
-  
-    const result = await updateReservationStatus(status, id);
-  
-    if (result == null) {
-      res.status(200).send({ message: "Reservation status is failed" });
-      return;
-    }
-  
-    res
-      .status(200)
-      .send({ message: "Reservation status is updated", data: result });
-  };
 
-  //Update Reservation date by admin
+    const result = await updateReservationStatus(status, id);
+
+    if (result == null) {
+        res.status(200).send({ message: "Reservation status is failed" });
+        return;
+    }
+
+    res
+        .status(200)
+        .send({ message: "Reservation status is updated", data: result });
+};
+
+//Update Reservation date by admin
 const updateReservationByCalendarDragDrop = async (req, res) => {
     console.log("Calendar Drag drop: ", req.body);
+
     const id = req.body.id;
-    const startTime = req.body.startTime;
-    const endTime = req.body.endTime
-  
-    const result = await updateReservationDateForDragDrop(startTime, endTime, id);
-  
-    if (result == null) {
-      res.status(203).send({ message: "Reservation Date update is failed" });
-      return;
+    const NewStartTime = req.body.NewStartTime;
+    const NewEndTime = req.body.NewEndTime
+    const stylist = req.body.stylist
+
+    // const result = await updateReservationDateForDragDrop(NewStartTime, NewEndTime, id, stylist);
+
+    //     if (result == null) {
+    //         res.status(203).send({ message: "Reservation Date update is failed" });
+    //         return;
+    //     }
+
+    //     res
+    //         .status(200)
+    //         .send({ message: "Reservation date is updated", data: result });
+
+
+    const reservation = await getReservationByReservationDetails( NewStartTime, NewEndTime, stylist)
+    console.log("Reservation: ", reservation);
+    console.log("Reservation Length: ", reservation.length);
+
+    if (reservation.length > 0) {
+        console.log("Reservation is already available on this date");
+        return res.status(203).json({
+            status: false,
+            message: 'Reservation is already available on this date'
+        });
+
+    } else {
+
+        const result = await updateReservationDateForDragDrop(NewStartTime, NewEndTime, id, stylist);
+
+        if (result == null) {
+            res.status(203).send({ message: "Reservation Date update is failed" });
+            return;
+        }
+        res
+            .status(200)
+            .send({ message: "Reservation date is updated", data: result });
     }
-  
-    res
-      .status(200)
-      .send({ message: "Reservation date is updated", data: result });
-  };
+
+
+};
 
 module.exports = {
     reservationCreatePost,
