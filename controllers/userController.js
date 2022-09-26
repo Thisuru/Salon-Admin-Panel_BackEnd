@@ -29,7 +29,8 @@ const userLogin = async (req, res) => {
 const userRegister = async (req, res) => {
 
     try {
-        const { username, password } = req.body;
+        console.log("Register body: ", req.body);
+        const { firstname, lastname, username, phonenumber, email, password } = req.body;
 
         const user = await getUserByUsername(username);
 
@@ -41,7 +42,11 @@ const userRegister = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const userData = {
+            firstname: firstname,
+            lastname: lastname,
             username: username.trim(),
+            phonenumber: phonenumber,
+            email : email,
             password: hashedPassword
         }
         const result = await createUser(userData)
