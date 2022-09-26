@@ -1,5 +1,4 @@
-const Stylist = require('../models/stylist');
-const { createUser, getUserByUsername } = require("../services/userService");
+const { createUser, getUserByUsername, getAll } = require("../services/userService");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -56,8 +55,36 @@ const userRegister = async (req, res) => {
 
 }
 
+//get all Admin Users
+const userGetAll = async (req, res) => {
+    try {
+        const params = req.query
+        const { data, count } = await getAll(params)
+
+        console.log("userGetAll: ", data);
+        const response = {
+            users: data.map(user => ({
+                id: user._id,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                phonenumber: user.phonenumber,
+                email: user.email
+            }
+            )),
+            totalPages: count,
+            currentPage: params?.page
+        }
+
+        res.send(response)
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: error.message || "Error Occurred while retriving user information" })
+    }
+}
+
 
 module.exports = {
     userLogin,
-    userRegister
+    userRegister,
+    userGetAll
 }
