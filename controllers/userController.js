@@ -8,6 +8,7 @@ const userLogin = async (req, res) => {
     const { username, password } = req.body;
     // const [user] = await mysqldb.query(`SELECT Name,Password FROM user WHERE Name ='${username}'`);
     const user = await getUserByUsername(username);
+    console.log("User: ", user);
 
     if (!user) {
         return res.status(203).json({ status: false, message: 'Sorry you do not have an account' });
@@ -18,10 +19,11 @@ const userLogin = async (req, res) => {
     if (!is_authnticted) {
         return res.status(203).json({ status: false, message: 'Your user name or password incorrect' });
     }
-    const accessToken = jwt.sign({ user: user.Name }, process.env.SECRET_KEY);
+    const maxAge = 1 * 24 * 60 * 60;
+    const accessToken = jwt.sign({ user: user.username }, process.env.SECRET_KEY, { expiresIn : maxAge } );
 
     //return res.header('auth-token', accessToken).send(accessToken);
-    return res.status(200).json({ status: true, username: user.Name, token: accessToken });
+    return res.status(200).json({ status: true, username: user.username, token: accessToken });
 
 }
 
