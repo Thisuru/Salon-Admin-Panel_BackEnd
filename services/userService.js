@@ -53,10 +53,38 @@ const deleteUser = (id) => {
     return User.findByIdAndDelete(id)
 }
 
+//get User by Email
+const getUserByEmail = (email) => {
+    console.log("EMAIL: ", email);
+    return User.findOne({
+        email : email
+    })
+}
+
+//Update User
+const updateUser = (id, reqBody) => {
+    return User.findByIdAndUpdate(id,
+        {
+            firstname: reqBody.firstname,
+            lastname: reqBody.lastname,
+            username : reqBody.username,
+            email : reqBody.email,
+            phonenumber: reqBody.phone,
+        },
+        { useFindAndModify: false })
+}
+
+//get single User Service
+const getSingle = (id) => {
+    return User.findById(id)
+}
 
 module.exports = {
     createUser,
     getUserByUsername,
     getAll,
-    deleteUser
+    deleteUser,
+    getUserByEmail,
+    updateUser,
+    getSingle
 }   

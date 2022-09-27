@@ -1,8 +1,15 @@
-const { createUser, getUserByUsername, getAll, deleteUser } = require("../services/userService");
+const { createUser, 
+        getUserByUsername, 
+        getAll, 
+        deleteUser, 
+        getUserByEmail, 
+        updateUser,
+        getSingle 
+      } = require("../services/userService");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-//get all Stylists
+//User Login
 const userLogin = async (req, res) => {
 
     const { username, password } = req.body;
@@ -27,7 +34,7 @@ const userLogin = async (req, res) => {
 
 }
 
-//Stylists create post API call (Save form data in db)
+//User Register
 const userRegister = async (req, res) => {
 
     try {
@@ -89,7 +96,7 @@ const userGetAll = async (req, res) => {
     }
 }
 
-//delete selected Client 
+//delete selected User 
 const userDelete = async (req, res) => {
     const id = req.params.id;
 
@@ -106,10 +113,57 @@ const userDelete = async (req, res) => {
     }
 }
 
+//update selected User
+const userUpdate = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        console.log("Req.body: ", req.body);
+        const user = await getUserByEmail(req.body.email)
+        console.log("User: ", user);
+        if (user) {
+            return res.status(203).json({
+                status: false,
+                message: 'This email is already in use.'
+            });
+        } else {
+            const result = await updateUser(id, req.body)
+            console.log("Result: ", result);
+            if (!result) {
+                res.status(404).send({ message: `Cannot Update user with ${id}. Maybe user not found!` })
+            } else {
+                res.send(result)
+            }
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Error Update user information" })
+    }
+}
+
+//get the selected Admin User based on Params id 
+const getSingleUser = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const result = await getSingle(id)
+        if (!result) {
+            res.status(404).send({ message: `Not found user with id ${id}` })
+        } else {
+            res.send(result)
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: `Erro retrieving user with id= ${id}` })
+    }
+}
 
 module.exports = {
     userLogin,
     userRegister,
     userGetAll,
-    userDelete
+    userDelete,
+    userUpdate,
+    getSingleUser
 }
