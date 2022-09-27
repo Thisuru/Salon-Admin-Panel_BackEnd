@@ -1,5 +1,6 @@
 require('dotenv').config()
 const nodemailer = require("nodemailer");
+const { createToken } = require('../services/emailService');
 
 const sendSuccessEmail = async (req, res) => {
   
@@ -42,6 +43,30 @@ const sendSuccessEmail = async (req, res) => {
     
   }
 
+  //Create JWT one time Register URL
+const inviteEmailExpiryToken = async (req, res) => {
+
+  try {
+
+      const token = await createToken(req.body.email)
+      if (!token) {
+          return res.status(400).json({
+              status: false,
+              message: 'JWT token not created'
+          });
+      } else {
+          res.send({ token: token})
+      }
+
+
+
+  } catch (error) {
+      console.log(error);
+      res.status(500).send({ message: error.message || "Error Update user information" })
+  }
+}
+
   module.exports = {
-    sendSuccessEmail
+    sendSuccessEmail,
+    inviteEmailExpiryToken
   }
