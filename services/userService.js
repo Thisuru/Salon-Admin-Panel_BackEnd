@@ -48,9 +48,15 @@ const getAll = async (params) => {
     return {data : await user.toArray(), count: resultCount}
 }
 
+//Delete User Service
+const deleteUser = (id) => {
+    return User.findByIdAndDelete(id)
+}
+
 
 module.exports = {
     createUser,
     getUserByUsername,
-    getAll
+    getAll,
+    deleteUser
 }   

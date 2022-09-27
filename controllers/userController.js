@@ -1,4 +1,4 @@
-const { createUser, getUserByUsername, getAll } = require("../services/userService");
+const { createUser, getUserByUsername, getAll, deleteUser } = require("../services/userService");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -30,7 +30,7 @@ const userRegister = async (req, res) => {
 
     try {
         console.log("Register body: ", req.body);
-        const { firstname, lastname, username, phonenumber, email, password } = req.body;
+        const { firstname, lastname, username, phone, email, password } = req.body;
 
         const user = await getUserByUsername(username);
 
@@ -45,7 +45,7 @@ const userRegister = async (req, res) => {
             firstname: firstname,
             lastname: lastname,
             username: username.trim(),
-            phonenumber: phonenumber,
+            phonenumber: phone,
             email : email,
             password: hashedPassword
         }
@@ -87,9 +87,27 @@ const userGetAll = async (req, res) => {
     }
 }
 
+//delete selected Client 
+const userDelete = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const result = await deleteUser(id)
+        if (!result) {
+            res.status(404).send({ message: `Cannot Delete user with ${id}. Maybe user not found!` })
+        } else {
+            res.send({ message: "User was deleted successfully!" })
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: `Could not delete User with id= ${id}` })
+    }
+}
+
 
 module.exports = {
     userLogin,
     userRegister,
-    userGetAll
+    userGetAll,
+    userDelete
 }
