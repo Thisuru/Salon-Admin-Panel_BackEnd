@@ -200,11 +200,21 @@ const updateReservationByCalendarDragDrop = async (req, res) => {
     //         .send({ message: "Reservation date is updated", data: result });
 
 
-    const reservation = await getReservationByReservationDetails( NewStartTime, NewEndTime, stylist)
-    console.log("Reservation: ", reservation);
-    console.log("Reservation Length: ", reservation.length);
+    const reservation = await getReservationByReservationDetails(NewStartTime, NewEndTime, stylist)
 
-    if (reservation.length > 0) {
+    const alreadyAvailableReservations = [];
+
+    for (let i in reservation) {
+        const result = await getSingle(reservation[i])
+
+        if (stylist === result.stylist.toString()){
+            alreadyAvailableReservations.push(result._id)
+        }
+    }
+
+    console.log("alreadyAvailableReservations: ", alreadyAvailableReservations);
+
+    if (alreadyAvailableReservations.length > 0) {
         console.log("Reservation is already available on this date");
         return res.status(203).json({
             status: false,

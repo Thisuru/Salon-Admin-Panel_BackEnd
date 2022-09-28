@@ -178,7 +178,7 @@ const updateReservationDateForDragDrop = (startTime, endTime, id, stylist) => {
 
 //Get Reservation By stylist id (Drag drop calnedar Validation)
 const getReservationByReservationDetails = ( NewStartTime, NewEndTime, stylist ) => {
-  return Reservation.distinct("stylist", {
+  return Reservation.distinct("_id", {
     $and: [
       {
         startTime: {
