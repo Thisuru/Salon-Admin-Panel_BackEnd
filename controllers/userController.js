@@ -1,13 +1,14 @@
-const { createUser, 
-        getUserByUsername, 
-        getAll, 
-        deleteUser, 
-        getUserByEmail, 
-        updateUser,
-        getSingle 
-      } = require("../services/userService");
+const { createUser,
+    getUserByUsername,
+    getAll,
+    deleteUser,
+    getUserByEmail,
+    updateUser,
+    getSingle
+} = require("../services/userService");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const jwt_decode = require('jwt-decode');
 
 //User Login
 const userLogin = async (req, res) => {
@@ -27,7 +28,7 @@ const userLogin = async (req, res) => {
         return res.status(203).json({ status: false, message: 'Your user name or password incorrect' });
     }
     const maxAge = 1 * 24 * 60 * 60;
-    const accessToken = jwt.sign({ user: user.username }, process.env.SECRET_KEY, { expiresIn : maxAge } );
+    const accessToken = jwt.sign({ user: user.username }, process.env.SECRET_KEY, { expiresIn: maxAge });
 
     //return res.header('auth-token', accessToken).send(accessToken);
     return res.status(200).json({ status: true, username: user.username, token: accessToken });
@@ -55,7 +56,7 @@ const userRegister = async (req, res) => {
             lastname: lastname,
             username: username.trim(),
             phonenumber: phone,
-            email : email,
+            email: email,
             password: hashedPassword
         }
         const result = await createUser(userData)
@@ -159,11 +160,37 @@ const getSingleUser = async (req, res) => {
     }
 }
 
+//Decode register token and check user availability
+const decodeTokenCheckAvailability = async (req, res) => {
+
+    try {
+
+        var token = req.body.token;
+        var decoded = jwt_decode(token);
+
+        const user = await getUserByEmail(decoded.email)
+
+        if (user) {
+            return res.status(203).json({
+                status: false,
+                message: 'User is already Signed Up'
+            });
+        } else {
+            res.send(decoded)
+        }
+
+    } catch (error) {
+        res.status(500).send({ message: "Error Decoding the admin user information" })
+    }
+
+}
+
 module.exports = {
     userLogin,
     userRegister,
     userGetAll,
     userDelete,
     userUpdate,
-    getSingleUser
+    getSingleUser,
+    decodeTokenCheckAvailability
 }
