@@ -4,7 +4,8 @@ const { createUser,
     deleteUser,
     getUserByEmail,
     updateUser,
-    getSingle
+    getSingle,
+    updatePassword
 } = require("../services/userService");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -185,6 +186,43 @@ const decodeTokenCheckAvailability = async (req, res) => {
 
 }
 
+//update selected User
+const userPasswordReset = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        console.log("Req.body: ", req.body);
+        const { password, confirmpassword } = req.body;
+
+        if (confirmpassword !== password) {
+
+            res.status(203).send({ message: "Password & Confirm Password does not match!" })
+
+        } else {
+            console.log("PAssword: ", password);
+
+            const salt = await bcrypt.genSalt()
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            console.log("hashedPassword: ", hashedPassword);
+
+            const userData = {
+                id: id,
+                password: hashedPassword
+            }
+            const result = await updatePassword(userData)
+            console.log("Result: ", result);
+
+            res.json({ status: true, message: "User password has been changed" });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Error Update user information" })
+    }
+}
+
+
 module.exports = {
     userLogin,
     userRegister,
@@ -192,5 +230,6 @@ module.exports = {
     userDelete,
     userUpdate,
     getSingleUser,
-    decodeTokenCheckAvailability
+    decodeTokenCheckAvailability,
+    userPasswordReset
 }

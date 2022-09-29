@@ -5,9 +5,10 @@ const { userLogin,
         userDelete, 
         userUpdate, 
         getSingleUser,
-        decodeTokenCheckAvailability 
+        decodeTokenCheckAvailability,
+        userPasswordReset 
     } = require('../controllers/userController');
-    
+
 const { route } = require('./clientRoutes');
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.get('/', userGetAll)
 router.get('/:id', getSingleUser);
 router.delete('/:id', userDelete);
 router.put('/:id', userUpdate);
+router.put('/reset_password/:id', userPasswordReset);
 router.post('/decode', decodeTokenCheckAvailability)
 
 module.exports = router;

@@ -74,6 +74,11 @@ const updateUser = (id, reqBody) => {
         { useFindAndModify: false })
 }
 
+//Update User
+const updatePassword = (userData) => {
+    return User.findByIdAndUpdate(userData.id, { password: userData.password }, { useFindAndModify: false })
+}
+
 //get single User Service
 const getSingle = (id) => {
     return User.findById(id)
@@ -86,5 +91,6 @@ module.exports = {
     deleteUser,
     getUserByEmail,
     updateUser,
-    getSingle
+    getSingle,
+    updatePassword
 }   
