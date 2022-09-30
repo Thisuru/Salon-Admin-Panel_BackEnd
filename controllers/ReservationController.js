@@ -200,7 +200,7 @@ const updateReservationByCalendarDragDrop = async (req, res) => {
     //         .send({ message: "Reservation date is updated", data: result });
 
 
-    const reservation = await getReservationByReservationDetails(NewStartTime, NewEndTime, stylist)
+    const reservation = await getReservationByReservationDetails(NewStartTime, NewEndTime)
 
     const alreadyAvailableReservations = [];
 
