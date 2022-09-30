@@ -6,6 +6,7 @@ const { userLogin,
         userUpdate, 
         getSingleUser,
         decodeTokenCheckAvailability,
+        decodeTokenByUsername,
         userPasswordReset 
     } = require('../controllers/userController');
 
@@ -20,6 +21,7 @@ router.get('/:id', getSingleUser);
 router.delete('/:id', userDelete);
 router.put('/:id', userUpdate);
 router.put('/reset_password/:id', userPasswordReset);
-router.post('/decode', decodeTokenCheckAvailability)
+router.post('/decode', decodeTokenCheckAvailability);
+router.post('/decode/getId', decodeTokenByUsername);
 
 module.exports = router;

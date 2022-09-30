@@ -30,7 +30,7 @@ const userLogin = async (req, res) => {
     }
     const maxAge = 1 * 24 * 60 * 60;
     const accessToken = jwt.sign({ user: user.username }, process.env.SECRET_KEY, { expiresIn: maxAge });
-
+    
     //return res.header('auth-token', accessToken).send(accessToken);
     return res.status(200).json({ status: true, username: user.username, token: accessToken });
 
@@ -186,6 +186,31 @@ const decodeTokenCheckAvailability = async (req, res) => {
 
 }
 
+//Decode register token and check user availability
+const decodeTokenByUsername = async (req, res) => {
+
+    try {
+
+        var token = req.body.token;
+        var decoded = jwt_decode(token);
+        console.log("decoded: ", decoded);
+        const user = await getUserByUsername(decoded.user)
+
+        if (!user) {
+            return res.status(203).json({
+                status: false,
+                message: 'User is not logged in!'
+            });
+        } else {
+            res.send(user)
+        }
+
+    } catch (error) {
+        res.status(500).send({ message: "Error Decoding the admin user information" })
+    }
+
+}
+
 //update selected User
 const userPasswordReset = async (req, res) => {
     const id = req.params.id;
@@ -231,5 +256,6 @@ module.exports = {
     userUpdate,
     getSingleUser,
     decodeTokenCheckAvailability,
+    decodeTokenByUsername,
     userPasswordReset
 }
