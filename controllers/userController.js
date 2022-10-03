@@ -30,7 +30,7 @@ const userLogin = async (req, res) => {
     }
     const maxAge = 1 * 24 * 60 * 60;
     const accessToken = jwt.sign({ user: user.username }, process.env.SECRET_KEY, { expiresIn: maxAge });
-    
+
     //return res.header('auth-token', accessToken).send(accessToken);
     return res.status(200).json({ status: true, username: user.username, token: accessToken });
 
@@ -41,29 +41,35 @@ const userRegister = async (req, res) => {
 
     try {
         console.log("Register body: ", req.body);
-        const { firstname, lastname, username, phone, email, password } = req.body;
+        const { firstname, lastname, username, phone, email, password, confirmpassword } = req.body;
 
-        const user = await getUserByUsername(username);
+        if (confirmpassword !== password) {
 
-        if (user) {
-            return res.status(203).json({ status: false, message: 'This user is already registered' });
+            res.status(203).send({ status: false, message: "Password & Confirm Password does not match!" })
+
+        } else {
+            const user = await getUserByUsername(username);
+
+            if (user) {
+                return res.status(203).json({ status: false, message: 'This user is already registered' });
+            }
+
+            const salt = await bcrypt.genSalt()
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            const userData = {
+                firstname: firstname,
+                lastname: lastname,
+                username: username.trim(),
+                phonenumber: phone,
+                email: email,
+                password: hashedPassword
+            }
+            const result = await createUser(userData)
+            console.log("Result: ", result);
+
+            res.json({ status: true, message: "User has been saved" });
         }
-
-        const salt = await bcrypt.genSalt()
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const userData = {
-            firstname: firstname,
-            lastname: lastname,
-            username: username.trim(),
-            phonenumber: phone,
-            email: email,
-            password: hashedPassword
-        }
-        const result = await createUser(userData)
-        console.log("Result: ", result);
-
-        res.json({ status: true, message: "User has been saved" });
 
     } catch (error) {
         res.status(400).json({ status: false, error: error.message });

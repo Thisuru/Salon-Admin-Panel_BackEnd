@@ -34,7 +34,6 @@ const stylistCreatePost = async (req, res) => {
         res.send(result)
 
     } catch (error) {
-        node
         console.log(error);
         res.status(500).send({ message: error.message || "Error Update user information" })
     }
@@ -67,23 +66,15 @@ const getEachStylistTimePerDay = async (req, res) => {
 
         function addHours(numOfHours, date = new Date()) {
             date.setTime(date.getTime() + numOfHours * 60 * 60 * 1000);
-          
+
             return date;
-          }
-          
-        //   const result = addHours(1);
-        //   const endDate = result.toISOString()
-          
-        //   console.log("Current Date + 1hr: ", result)
-        //   console.log("Current Date Moment ", moment(new Date()).format('MMMM Do YYYY, h:mm:ss a'));
-        //   console.log("Current Date + 1hr Moment ", moment(result).format('MMMM Do YYYY, h:mm:ss a'));
-        //   console.log("Current Date + 1hr in ISO: ", result.toISOString())
-        //   console.log("CurrentDate: ", currentDate);
+        }
 
         let start = '2022-09-30T02:30:00.072Z'
         let end = '2022-09-30T11:30:00.072Z'
 
         const resevedReservationIds = await getReservationByReservationDetails(start, end);
+        console.log("resevedReservationIds: ", resevedReservationIds);
 
         res.send(resevedReservationIds)
     } catch (error) {
