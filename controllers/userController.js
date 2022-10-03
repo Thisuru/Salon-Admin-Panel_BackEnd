@@ -41,29 +41,35 @@ const userRegister = async (req, res) => {
 
     try {
         console.log("Register body: ", req.body);
-        const { firstname, lastname, username, phone, email, password } = req.body;
+        const { firstname, lastname, username, phone, email, password, confirmpassword } = req.body;
 
-        const user = await getUserByUsername(username);
+        if (confirmpassword !== password) {
 
-        if (user) {
-            return res.status(203).json({ status: false, message: 'This user is already registered' });
+            res.status(203).send({ status: false, message: "Password & Confirm Password does not match!" })
+
+        } else {
+            const user = await getUserByUsername(username);
+
+            if (user) {
+                return res.status(203).json({ status: false, message: 'This user is already registered' });
+            }
+
+            const salt = await bcrypt.genSalt()
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            const userData = {
+                firstname: firstname,
+                lastname: lastname,
+                username: username.trim(),
+                phonenumber: phone,
+                email: email,
+                password: hashedPassword
+            }
+            const result = await createUser(userData)
+            console.log("Result: ", result);
+
+            res.json({ status: true, message: "User has been saved" });
         }
-
-        const salt = await bcrypt.genSalt()
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const userData = {
-            firstname: firstname,
-            lastname: lastname,
-            username: username.trim(),
-            phonenumber: phone,
-            email: email,
-            password: hashedPassword
-        }
-        const result = await createUser(userData)
-        console.log("Result: ", result);
-
-        res.json({ status: true, message: "User has been saved" });
 
     } catch (error) {
         res.status(400).json({ status: false, error: error.message });
@@ -186,6 +192,31 @@ const decodeTokenCheckAvailability = async (req, res) => {
 
 }
 
+//Decode register token and check user availability
+const decodeTokenByUsername = async (req, res) => {
+
+    try {
+
+        var token = req.body.token;
+        var decoded = jwt_decode(token);
+        console.log("decoded: ", decoded);
+        const user = await getUserByUsername(decoded.user)
+
+        if (!user) {
+            return res.status(203).json({
+                status: false,
+                message: 'User is not logged in!'
+            });
+        } else {
+            res.send(user)
+        }
+
+    } catch (error) {
+        res.status(500).send({ message: "Error Decoding the admin user information" })
+    }
+
+}
+
 //update selected User
 const userPasswordReset = async (req, res) => {
     const id = req.params.id;
@@ -231,5 +262,6 @@ module.exports = {
     userUpdate,
     getSingleUser,
     decodeTokenCheckAvailability,
+    decodeTokenByUsername,
     userPasswordReset
 }

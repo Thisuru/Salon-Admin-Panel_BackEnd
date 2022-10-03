@@ -154,6 +154,28 @@ const getReservedStylishIds = (start, end) => {
   });
 };
 
+//Get Reservation By stylist id (Drag drop calnedar Validation)
+const getReservationByReservationDetails = ( start, end ) => {
+  return Reservation.distinct("_id", {
+    $and: [
+      {
+        startTime: {
+          $lte: start,
+        },
+        endTime: {
+          $gte: start,
+        },
+        startTime: {
+          $lte: end,
+        },
+        endTime: {
+          $gte: end,
+        }
+      },
+    ],
+  });
+}
+
 //update reservation status service
 const updateReservationStatus = (status, id) => {
   console.log("Status: ", status);
@@ -175,28 +197,6 @@ const updateReservationDateForDragDrop = (startTime, endTime, id, stylist) => {
     { $set: { startTime: startTime, endTime: endTime } }
   );
 };
-
-//Get Reservation By stylist id (Drag drop calnedar Validation)
-const getReservationByReservationDetails = ( NewStartTime, NewEndTime, stylist ) => {
-  return Reservation.distinct("_id", {
-    $and: [
-      {
-        startTime: {
-          $lte: NewStartTime,
-        },
-        endTime: {
-          $gte: NewStartTime,
-        },
-        startTime: {
-          $lte: NewEndTime,
-        },
-        endTime: {
-          $gte: NewEndTime,
-        }
-      },
-    ],
-  });
-}
 
 module.exports = {
   getAll,

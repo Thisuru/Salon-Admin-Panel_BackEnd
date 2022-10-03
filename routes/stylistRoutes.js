@@ -1,10 +1,11 @@
 const express = require('express');
-const StylistController = require('../controllers/StylistController');
+const { stylistGetAll ,stylistCreatePost, getAvailableStylish, getEachStylistTimePerDay} = require('../controllers/StylistController');
 
 const router = express.Router();
 
-router.get('/', StylistController.stylistGetAll);
-router.post('/', StylistController.stylistCreatePost);
-router.post("/getAvailableStylish", StylistController.getAvailableStylish);
+router.get('/', stylistGetAll);
+router.post('/', stylistCreatePost);
+router.post("/getAvailableStylish", getAvailableStylish);
+router.post("/getEachStylistTime", getEachStylistTimePerDay);
 
 module.exports = router;
