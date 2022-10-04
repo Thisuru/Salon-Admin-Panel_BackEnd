@@ -30,10 +30,10 @@ const getAll = async (params) => {
 
   if (search && search.trim() != '') {
     query = [
-      { clientFullName: { $regex: search, $options: "i" } },
-      { stylistFullName: { $regex: search, $options: "i" } },
-      { service: { $regex: search, $options: "i" } },
-      { status: { $regex: search, $options: "i" } },
+      { clientFullName: { $regex: search } },
+      { stylistFullName: { $regex: search } },
+      { service: { $regex: search } },
+      { status: { $regex: search } },
     ];
   }
 
