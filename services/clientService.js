@@ -6,14 +6,14 @@ const getAll = async (params) => {
     let filters = {}
 
     if (params?.search) {
-        const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
-        const searchRgx = rgx(params.search);
+        // const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
+        // const searchRgx = rgx(params.search);
 
         filters.$or = [
-            { firstname: { $regex: searchRgx, $options: "i" } },
-            { lastname: { $regex: searchRgx, $options: "i" } },
-            { phonenumber: { $regex: searchRgx, $options: "i" } },
-            { email: { $regex: searchRgx, $options: "i" } }
+            { firstname: { $regex: params.search} },
+            { lastname: { $regex: params.search} },
+            { phonenumber: { $regex: params.search} },
+            { email: { $regex: params.search} }
         ]
     }
 
