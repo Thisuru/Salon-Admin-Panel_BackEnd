@@ -17,7 +17,6 @@ const userLogin = async (req, res) => {
     const { username, password } = req.body;
     // const [user] = await mysqldb.query(`SELECT Name,Password FROM user WHERE Name ='${username}'`);
     const user = await getUserByUsername(username);
-    console.log("User: ", user);
 
     if (!user) {
         return res.status(203).json({ status: false, message: 'Sorry you do not have an account' });
@@ -40,7 +39,6 @@ const userLogin = async (req, res) => {
 const userRegister = async (req, res) => {
 
     try {
-        console.log("Register body: ", req.body);
         const { firstname, lastname, username, phone, email, password, confirmpassword } = req.body;
 
         if (confirmpassword !== password) {
@@ -66,7 +64,6 @@ const userRegister = async (req, res) => {
                 password: hashedPassword
             }
             const result = await createUser(userData)
-            console.log("Result: ", result);
 
             res.json({ status: true, message: "User has been saved" });
         }
@@ -83,7 +80,6 @@ const userGetAll = async (req, res) => {
         const params = req.query
         const { data, count } = await getAll(params)
 
-        console.log("userGetAll: ", data);
         const response = {
             users: data.map(user => ({
                 id: user._id,
@@ -99,7 +95,6 @@ const userGetAll = async (req, res) => {
 
         res.send(response)
     } catch (error) {
-        console.log(error);
         res.status(500).send({ message: error.message || "Error Occurred while retriving user information" })
     }
 }
@@ -116,7 +111,6 @@ const userDelete = async (req, res) => {
             res.send({ message: "User was deleted successfully!" })
         }
     } catch (error) {
-        console.log(error);
         res.status(500).send({ message: `Could not delete User with id= ${id}` })
     }
 }
@@ -126,9 +120,8 @@ const userUpdate = async (req, res) => {
     const id = req.params.id;
 
     try {
-        console.log("Req.body: ", req.body);
         const user = await getUserByEmail(req.body.email)
-        console.log("User: ", user);
+
         if (user) {
             return res.status(203).json({
                 status: false,
@@ -136,7 +129,7 @@ const userUpdate = async (req, res) => {
             });
         } else {
             const result = await updateUser(id, req.body)
-            console.log("Result: ", result);
+
             if (!result) {
                 res.status(404).send({ message: `Cannot Update user with ${id}. Maybe user not found!` })
             } else {
@@ -145,7 +138,6 @@ const userUpdate = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error);
         res.status(500).send({ message: "Error Update user information" })
     }
 }
@@ -162,7 +154,6 @@ const getSingleUser = async (req, res) => {
             res.send(result)
         }
     } catch (error) {
-        console.log(error);
         res.status(500).send({ message: `Erro retrieving user with id= ${id}` })
     }
 }
@@ -174,7 +165,7 @@ const decodeTokenCheckAvailability = async (req, res) => {
 
         var token = req.body.token;
         var decoded = jwt_decode(token);
-
+        
         const user = await getUserByEmail(decoded.email)
 
         if (user) {
@@ -199,7 +190,7 @@ const decodeTokenByUsername = async (req, res) => {
 
         var token = req.body.token;
         var decoded = jwt_decode(token);
-        console.log("decoded: ", decoded);
+
         const user = await getUserByUsername(decoded.user)
 
         if (!user) {
@@ -222,33 +213,25 @@ const userPasswordReset = async (req, res) => {
     const id = req.params.id;
 
     try {
-        console.log("Req.body: ", req.body);
         const { password, confirmpassword } = req.body;
 
         if (confirmpassword !== password) {
-
             res.status(203).send({ message: "Password & Confirm Password does not match!" })
 
         } else {
-            console.log("PAssword: ", password);
-
             const salt = await bcrypt.genSalt()
             const hashedPassword = await bcrypt.hash(password, salt);
-
-            console.log("hashedPassword: ", hashedPassword);
 
             const userData = {
                 id: id,
                 password: hashedPassword
             }
             const result = await updatePassword(userData)
-            console.log("Result: ", result);
 
             res.json({ status: true, message: "User password has been changed" });
         }
 
     } catch (error) {
-        console.log(error);
         res.status(500).send({ message: "Error Update user information" })
     }
 }
