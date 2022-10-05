@@ -79,12 +79,13 @@ const userGetAll = async (req, res) => {
     try {
         const params = req.query
         const { data, count } = await getAll(params)
-
+        console.log("userGetAll data: ", data);
         const response = {
             users: data.map(user => ({
                 id: user._id,
                 firstname: user.firstname,
                 lastname: user.lastname,
+                username: user.username, 
                 phonenumber: user.phonenumber,
                 email: user.email
             }
