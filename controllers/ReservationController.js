@@ -7,7 +7,8 @@ const { getAll,
     updateReservation,
     updateReservationStatus,
     updateReservationDateForDragDrop,
-    getReservationByReservationDetails
+    getReservationByReservationDetails,
+    isInThePast
 } = require('../services/reservationService');
 
 const { objectIdValider } = require('../services/objectIdValiderService');
@@ -188,50 +189,53 @@ const updateReservationByCalendarDragDrop = async (req, res) => {
     const NewEndTime = req.body.NewEndTime
     const stylist = req.body.stylist
 
-    // const result = await updateReservationDateForDragDrop(NewStartTime, NewEndTime, id, stylist);
+    try {
+        const dropedDateInThePast = isInThePast(NewStartTime);
+        console.log("dropedDateInThePast: ", dropedDateInThePast);
 
-    //     if (result == null) {
-    //         res.status(203).send({ message: "Reservation Date update is failed" });
-    //         return;
-    //     }
+        if (!dropedDateInThePast) {
+            const reservation = await getReservationByReservationDetails(NewStartTime, NewEndTime)
 
-    //     res
-    //         .status(200)
-    //         .send({ message: "Reservation date is updated", data: result });
+            const alreadyAvailableReservations = [];
 
+            for (let i in reservation) {
+                const result = await getSingle(reservation[i])
 
-    const reservation = await getReservationByReservationDetails(NewStartTime, NewEndTime)
+                if (stylist === result.stylist.toString()) {
+                    alreadyAvailableReservations.push(result._id)
+                }
+            }
 
-    const alreadyAvailableReservations = [];
+            console.log("alreadyAvailableReservations: ", alreadyAvailableReservations);
 
-    for (let i in reservation) {
-        const result = await getSingle(reservation[i])
+            if (alreadyAvailableReservations.length > 0) {
+                console.log("Reservation is already available on this date");
+                return res.status(203).json({
+                    status: false,
+                    message: 'Reservation is already available on this date'
+                });
 
-        if (stylist === result.stylist.toString()){
-            alreadyAvailableReservations.push(result._id)
+            } else {
+
+                const result = await updateReservationDateForDragDrop(NewStartTime, NewEndTime, id, stylist);
+
+                if (result == null) {
+                    res.status(203).send({ message: "Reservation Date update is failed" });
+                    return;
+                }
+                res
+                    .status(200)
+                    .send({ message: "Reservation date is updated", data: result });
+            }
+        } else {
+            return res.status(203).json({
+                status: false,
+                message: 'Unable to place a reservation on a past date!'
+            });
         }
-    }
-
-    console.log("alreadyAvailableReservations: ", alreadyAvailableReservations);
-
-    if (alreadyAvailableReservations.length > 0) {
-        console.log("Reservation is already available on this date");
-        return res.status(203).json({
-            status: false,
-            message: 'Reservation is already available on this date'
-        });
-
-    } else {
-
-        const result = await updateReservationDateForDragDrop(NewStartTime, NewEndTime, id, stylist);
-
-        if (result == null) {
-            res.status(203).send({ message: "Reservation Date update is failed" });
-            return;
-        }
-        res
-            .status(200)
-            .send({ message: "Reservation date is updated", data: result });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: error.message || "Error Occurred while Drag & dropping the reservation!" })
     }
 
 

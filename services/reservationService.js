@@ -198,6 +198,17 @@ const updateReservationDateForDragDrop = (startTime, endTime, id, stylist) => {
   );
 };
 
+//Check Droped date is a past date or not
+const isInThePast = (date) => {
+  console.log("isInThePast date: ", date);
+  const droppedDate = new Date(date);
+  const today = new Date();
+  
+  today.setHours(0, 0, 0, 0);
+
+  return droppedDate < today;
+}
+
 module.exports = {
   getAll,
   getAllReservationCount,
@@ -209,5 +220,6 @@ module.exports = {
   getCompletedReservationCount,
   updateReservationStatus,
   updateReservationDateForDragDrop,
-  getReservationByReservationDetails
+  getReservationByReservationDetails,
+  isInThePast
 }
