@@ -207,58 +207,57 @@ const isInThePast = (date) => {
 
 //get single Reservation Service
 const getSpecificFieldsById = (id) => {
-  return Reservation.findById(
-    id,
-    {stylist: 1, startTime: 1, endTime: 1}
-    )
+  // return Reservation.findById(
+  //   id,
+  //   {stylist: 1, startTime: 1, endTime: 1}
+  //   )
+  
+  const reservation = [
+    {
+      '$match': {
+         _id: BSON.ObjectId(id) 
+      }
+    },
+    {
+      '$lookup': {
+        'from': 'clients',
+        'localField': 'client',
+        'foreignField': '_id',
+        'as': 'clients'
+      }
+    }, {
+      '$lookup': {
+        'from': 'stylists',
+        'localField': 'stylist',
+        'foreignField': '_id',
+        'as': 'stylists'
+      }
+    }, {
+      '$unwind': {
+        'path': '$clients'
+      }
+    }, {
+      '$unwind': {
+        'path': '$stylists'
+      }
+    }, {
+      '$addFields': {
+        'clientFullName': {
+          '$concat': [
+            '$clients.firstname', ' ', '$clients.lastname'
+          ]
+        },
+        'stylistFullName': {
+          '$concat': [
+            '$stylists.firstname', ' ', '$stylists.lastname'
+          ]
+        }
+      }
+    }
+  ];
 
-
-  // const reservation = [
-  //   {
-  //     '$match': {
-  //        _id: BSON.ObjectId(id) 
-  //     }
-  //   },
-  //   {
-  //     '$lookup': {
-  //       'from': 'clients',
-  //       'localField': 'client',
-  //       'foreignField': '_id',
-  //       'as': 'clients'
-  //     }
-  //   }, {
-  //     '$lookup': {
-  //       'from': 'stylists',
-  //       'localField': 'stylist',
-  //       'foreignField': '_id',
-  //       'as': 'stylists'
-  //     }
-  //   }, {
-  //     '$unwind': {
-  //       'path': '$clients'
-  //     }
-  //   }, {
-  //     '$unwind': {
-  //       'path': '$stylists'
-  //     }
-  //   }, {
-  //     '$addFields': {
-  //       'clientFullName': {
-  //         '$concat': [
-  //           '$clients.firstname', ' ', '$clients.lastname'
-  //         ]
-  //       },
-  //       'stylistFullName': {
-  //         '$concat': [
-  //           '$stylists.firstname', ' ', '$stylists.lastname'
-  //         ]
-  //       }
-  //     }
-  //   }
-  // ];
-
-  // const results = Reservation.aggregate(reservation)
-  // return results
+  const results = Reservation.aggregate(reservation)
+  return results
 
 }
 
@@ -285,6 +284,13 @@ function addWeeks(numOfWeeks, date = new Date()) {
   return date;
 }
 
+//get startTime and endTime difference
+const getTimeDifference = (startDate, endDate) => {
+  const msInHour = 1000 * 60;
+
+  return Math.round(Math.abs(endDate - startDate) / msInHour);
+}
+
 module.exports = {
   getAll,
   getAllReservationCount,
@@ -299,5 +305,6 @@ module.exports = {
   updateReservationStatus,
   updateReservationDateForDragDrop,
   isInThePast,
-  getSpecificFieldsById
+  getSpecificFieldsById,
+  getTimeDifference
 }

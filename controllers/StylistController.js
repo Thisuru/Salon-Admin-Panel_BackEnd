@@ -1,5 +1,5 @@
 const Stylist = require('../models/stylist');
-const { getReservedStylishIds, getThisWeekReservationIds, getSpecificFieldsById } = require("../services/reservationService");
+const { getReservedStylishIds, getThisWeekReservationIds, getSpecificFieldsById, getTimeDifference } = require("../services/reservationService");
 const { getAvailableFromResevedIds, getSingle } = require("../services/stylishService");
 var moment = require('moment');
 
@@ -65,17 +65,44 @@ const getEachStylistTimePerWeek = async (req, res) => {
 
         const thisWeekReservations = await getThisWeekReservationIds();
         console.log("thisWeekReservationsIds: ", thisWeekReservations);
-        let getSingleReservation = []
+        let middleReservationObj = {};
+        let getSingleReservation = [];
 
         for (let i = 0; i < thisWeekReservations.length; i++) {
 
             let reservation = await getSpecificFieldsById(thisWeekReservations[i]);
-            // console.log("reservation: ", reservation);
-            getSingleReservation.push(reservation)
+            let start = reservation[0].startTime;
+            let end = reservation[0].endTime
+            let minutesDifference = getTimeDifference(start, end);
+
+            middleReservationObj.name = reservation[0].stylistFullName
+            middleReservationObj.WeeklyTimeInMins = minutesDifference
+
+            getSingleReservation.push(middleReservationObj)
+            middleReservationObj = {}
         }
 
         console.log("FINAL: ", getSingleReservation);
-        res.send(getSingleReservation)
+
+        var holder = {};
+        
+        getSingleReservation.forEach(function(d) {
+          if (holder.hasOwnProperty(d.name)) {
+            holder[d.name] = holder[d.name] + d.WeeklyTimeInMins;
+          } else {
+            holder[d.name] = d.WeeklyTimeInMins;
+          }
+        });
+        
+        var barchartReservationData = [];
+        
+        for (var prop in holder) {
+          barchartReservationData.push({ name: prop, WeeklyTimeInMins: holder[prop] });
+        }
+        
+        console.log(barchartReservationData);
+
+        res.send(barchartReservationData)
 
     } catch (error) {
         res
