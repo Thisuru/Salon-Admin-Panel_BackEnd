@@ -9,6 +9,12 @@ const getAvailableFromResevedIds = (resevedIds) => {
   });
 };
 
+//get single Stylist Service
+const getSingle = (id) => {
+  return Stylist.findById(id)
+}
+
 module.exports = {
   getAvailableFromResevedIds,
+  getSingle
 };

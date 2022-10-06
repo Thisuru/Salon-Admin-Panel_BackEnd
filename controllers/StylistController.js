@@ -1,6 +1,6 @@
 const Stylist = require('../models/stylist');
-const { getReservedStylishIds, getReservationByReservationDetails } = require("../services/reservationService");
-const { getAvailableFromResevedIds } = require("../services/stylishService");
+const { getReservedStylishIds, getThisWeekReservationIds, getSpecificFieldsById, getTimeDifference } = require("../services/reservationService");
+const { getAvailableFromResevedIds, getSingle } = require("../services/stylishService");
 var moment = require('moment');
 
 //get all Stylists
@@ -60,27 +60,72 @@ const getAvailableStylish = async (req, res) => {
     }
 };
 
-const getEachStylistTimePerDay = async (req, res) => {
+const getEachStylistTimePerWeek = async (req, res) => {
     try {
-        // const currentDate = new Date().toISOString();
 
-        function addHours(numOfHours, date = new Date()) {
-            date.setTime(date.getTime() + numOfHours * 60 * 60 * 1000);
+        const thisWeekReservations = await getThisWeekReservationIds();
+        console.log("thisWeekReservationsIds: ", thisWeekReservations);
+        let middleReservationObj = {};
+        let getSingleReservation = [];
 
-            return date;
+        for (let i = 0; i < thisWeekReservations.length; i++) {
+
+            let reservation = await getSpecificFieldsById(thisWeekReservations[i]);
+            let start = reservation[0].startTime;
+            let end = reservation[0].endTime
+            let minutesDifference = getTimeDifference(start, end);
+
+            middleReservationObj.name = reservation[0].stylistFullName
+            middleReservationObj.WeeklyTimeInMins = minutesDifference
+
+            getSingleReservation.push(middleReservationObj)
+            middleReservationObj = {}
         }
 
-        let start = '2022-09-30T02:30:00.072Z'
-        let end = '2022-09-30T11:30:00.072Z'
+        console.log("FINAL: ", getSingleReservation);
 
-        const resevedReservationIds = await getReservationByReservationDetails(start, end);
-        console.log("resevedReservationIds: ", resevedReservationIds);
+        var holder = {};
+        
+        getSingleReservation.forEach(function(d) {
+          if (holder.hasOwnProperty(d.name)) {
+            holder[d.name] = holder[d.name] + d.WeeklyTimeInMins;
+          } else {
+            holder[d.name] = d.WeeklyTimeInMins;
+          }
+        });
+        
+        var barchartReservationData = [];
+        
+        for (var prop in holder) {
+          barchartReservationData.push({ name: prop, WeeklyTimeInMins: holder[prop] });
+        }
+        
+        console.log(barchartReservationData);
 
-        res.send(resevedReservationIds)
+        res.send(barchartReservationData)
+
     } catch (error) {
         res
             .status(500)
-            .send({ message: error.message || "Error Occurred while retriving user information" });
+            .send({ message: error.message || "Error Occurred while retriving stylist information" });
+    }
+}
+
+//get the selected Stylist based on Params id 
+const getStylistNameById = async (req, res) => {
+
+    try {
+        const id = req.params.id;
+        const result = await getSingle(id)
+
+        if (!result) {
+            res.status(404).send({ message: `Not found user with id ${id}` })
+        } else {
+            res.send(result)
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: `Erro retrieving user with id= ${id}` })
     }
 }
 
@@ -89,5 +134,6 @@ module.exports = {
     stylistGetAll,
     stylistCreatePost,
     getAvailableStylish,
-    getEachStylistTimePerDay
+    getEachStylistTimePerWeek,
+    getStylistNameById
 }

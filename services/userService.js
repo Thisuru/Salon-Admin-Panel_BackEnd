@@ -18,7 +18,25 @@ const getUserByUsername = (username) => {
 
 //get all Admin Users service
 const getAll = async (params) => {
+
+    const sort = 'OLDEST'
+    const page = Math.max(0, params?.page || 1)
+    const perPage = 30;
+
+    let sortQuery = {};
     let filters = {}
+
+    if (sort == 'NEWEST') {
+        sortQuery = {
+            _id: -1,
+        };
+    }
+
+    if (sort == 'OLDEST') {
+        sortQuery = {
+            _id: 1,
+        };
+    }
 
     if (params?.search) {
         const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
@@ -31,10 +49,8 @@ const getAll = async (params) => {
             { email: { $regex: searchRgx, $options: "i" } }
         ]
     }
-
-    const page = Math.max(0, params?.page || 1)
-    const perPage = 30;
-    const user = User.collection.find(filters)
+    
+    const user = User.collection.find(filters).sort({ ...sortQuery })
 
     const resultCount = await user.count();
 

@@ -30,7 +30,7 @@ const clientGetAll = async (req, res) => {
         res.send(response)
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message: error.message || "Error Occurred while retriving user information" })
+        res.status(400).send({ message: error.message || "Error Occurred while retriving user information" })
     }
 }
 
@@ -47,7 +47,7 @@ const clientGetSingleClient = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message: `Erro retrieving user with id= ${id}` })
+        res.status(400).send({ message: `Erro retrieving user with id= ${id}` })
     }
 }
 
@@ -77,7 +77,7 @@ const clientCreatePost = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message: error.message || "Error Update user information" })
+        res.status(400).send({ message: error.message || "Error Update user information" })
     }
 }
 
@@ -94,7 +94,7 @@ const clientDelete = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message: `Could not delete User with id= ${id}` })
+        res.status(400).send({ message: `Could not delete User with id= ${id}` })
     }
 }
 
@@ -122,7 +122,7 @@ const clientUpdate = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message: "Error Update user information" })
+        res.status(400).send({ message: "Error Update user information" })
     }
 }
 
