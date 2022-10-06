@@ -1,4 +1,5 @@
 const Reservation = require('../models/reservation');
+const BSON = require('bson');
 
 //get all Reservation service
 const getAll = async (params) => {
@@ -89,7 +90,7 @@ const getAll = async (params) => {
     }
   ]);
 
-  return {data: reservation};
+  return { data: reservation };
 }
 
 //All Reservation Count
@@ -155,7 +156,7 @@ const getReservedStylishIds = (start, end) => {
 };
 
 //Get Reservation By stylist id (Drag drop calnedar Validation)
-const getReservationByReservationDetails = ( start, end ) => {
+const getReservationByReservationDetails = (start, end) => {
   return Reservation.distinct("_id", {
     $and: [
       {
@@ -187,11 +188,6 @@ const updateReservationStatus = (status, id) => {
 
 //Update Reservation date service
 const updateReservationDateForDragDrop = (startTime, endTime, id, stylist) => {
-  console.log("startTime service: ", startTime);
-  console.log("endTime service: ", endTime);
-  console.log("id service: ", id);
-  console.log("stylist service: ", stylist);
-
   return Reservation.findOneAndUpdate(
     { _id: id },
     { $set: { startTime: startTime, endTime: endTime } }
@@ -203,10 +199,90 @@ const isInThePast = (date) => {
   console.log("isInThePast date: ", date);
   const droppedDate = new Date(date);
   const today = new Date();
-  
+
   today.setHours(0, 0, 0, 0);
 
   return droppedDate < today;
+}
+
+//get single Reservation Service
+const getSpecificFieldsById = (id) => {
+  return Reservation.findById(
+    id,
+    {stylist: 1, startTime: 1, endTime: 1}
+    )
+
+
+  // const reservation = [
+  //   {
+  //     '$match': {
+  //        _id: BSON.ObjectId(id) 
+  //     }
+  //   },
+  //   {
+  //     '$lookup': {
+  //       'from': 'clients',
+  //       'localField': 'client',
+  //       'foreignField': '_id',
+  //       'as': 'clients'
+  //     }
+  //   }, {
+  //     '$lookup': {
+  //       'from': 'stylists',
+  //       'localField': 'stylist',
+  //       'foreignField': '_id',
+  //       'as': 'stylists'
+  //     }
+  //   }, {
+  //     '$unwind': {
+  //       'path': '$clients'
+  //     }
+  //   }, {
+  //     '$unwind': {
+  //       'path': '$stylists'
+  //     }
+  //   }, {
+  //     '$addFields': {
+  //       'clientFullName': {
+  //         '$concat': [
+  //           '$clients.firstname', ' ', '$clients.lastname'
+  //         ]
+  //       },
+  //       'stylistFullName': {
+  //         '$concat': [
+  //           '$stylists.firstname', ' ', '$stylists.lastname'
+  //         ]
+  //       }
+  //     }
+  //   }
+  // ];
+
+  // const results = Reservation.aggregate(reservation)
+  // return results
+
+}
+
+//get current week reservations
+const getThisWeekReservationIds = () => {
+
+  let currentDate = addWeeks(0);
+  let thisWeekEndDate = addWeeks(1);
+
+  return Reservation.distinct("_id", {
+    $and: [
+      {
+        startTime: {
+          $gte: currentDate,
+          $lte: thisWeekEndDate
+        }
+      },
+    ],
+  });
+}
+//get the week after date from the current date
+function addWeeks(numOfWeeks, date = new Date()) {
+  date.setDate(date.getDate() + numOfWeeks * 7);
+  return date;
 }
 
 module.exports = {
@@ -217,9 +293,11 @@ module.exports = {
   deleteReservation,
   updateReservation,
   getReservedStylishIds,
+  getReservationByReservationDetails,
+  getThisWeekReservationIds,
   getCompletedReservationCount,
   updateReservationStatus,
   updateReservationDateForDragDrop,
-  getReservationByReservationDetails,
-  isInThePast
+  isInThePast,
+  getSpecificFieldsById
 }
