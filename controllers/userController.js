@@ -10,30 +10,7 @@ const { createUser,
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const jwt_decode = require('jwt-decode');
-
-// handle errors
-const handleErrors = (err) => {
-    console.log(err.message, err.code);
-    let errors = { firstname : '', lastname: '', username: '', phonenumber: '', email: '', password: '' };
-  
-    // duplicate email error
-    if (err.code === 11000) {
-      errors.email = 'that email is already registered';
-      return errors;
-    }
-  
-    // validation errors
-    if (err.message.includes('User validation failed')) {
-      console.log(err);
-      Object.values(err.errors).forEach(({ properties }) => {
-        // console.log(val);
-        // console.log(properties);
-        errors[properties.path] = properties.message;
-      });
-    }
-  
-    return errors;
-  }
+const { handleErrors } = require('../util/errorHandler/SignUpErrorHandler');
 
 //User Login
 const userLogin = async (req, res) => {
@@ -95,7 +72,7 @@ const userRegister = async (req, res) => {
 
     } catch (error) {
         const err = handleErrors(error)
-        res.status(400).json({ status: false, message: err });
+        res.status(400).json({ status: false, error: err });
     }
 
 }
