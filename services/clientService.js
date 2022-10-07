@@ -71,13 +71,13 @@ const getClientByEmail = (email) => {
 }
 
 //Reservation create post API call service
-const createPost = (requestBody) => {
+const createPost = ({ firstname, lastname, phonenumber, email}) => {
 
     const client = new Client({
-        firstname: requestBody.firstname,
-        lastname: requestBody.lastname,
-        phonenumber: requestBody.phonenumber,
-        email: requestBody.email
+        firstname: firstname,
+        lastname: lastname,
+        phonenumber: phonenumber,
+        email: email
     });
 
     return Client.create(client)

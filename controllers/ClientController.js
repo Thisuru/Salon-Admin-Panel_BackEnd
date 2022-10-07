@@ -6,6 +6,7 @@ const { getAll,
     updateClient,
     getClientByEmail
 } = require('../services/clientService');
+const { internalServerError } = require('../util/errorHandler/InternalServerError');
 
 //get all Clients
 const clientGetAll = async (req, res) => {
@@ -54,14 +55,10 @@ const clientGetSingleClient = async (req, res) => {
 //Client create post API call (Save form data in db)
 const clientCreatePost = async (req, res) => {
 
-    if (!req.body) {
-        res.status(400).send({ message: "Content can not be empty!" });
-        return;
-    }
+    const { firstname, lastname, phonenumber, email} = req.body
 
     try {
-
-        const user = await getClientByEmail(req.body.email)
+        const user = await getClientByEmail(email)
 
         if (user) {
             return res.status(203).json({
@@ -69,15 +66,15 @@ const clientCreatePost = async (req, res) => {
                 message: 'This email is already in use.'
             });
         } else {
-            const result = await createPost(req.body)
+            const result = await createPost({ firstname, lastname, phonenumber, email})
             res.send(result)
         }
 
-
-
     } catch (error) {
-        console.log(error);
-        res.status(400).send({ message: error.message || "Error Update user information" })
+        const errors = { firstname : '', lastname: '', username: '', phonenumber: '' };
+        
+        let err = internalServerError(error, errors, 'Client')
+        res.status(400).send({ status: false, error: err || "Error creating the Client!" })
     }
 }
 
