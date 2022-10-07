@@ -11,6 +11,30 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const jwt_decode = require('jwt-decode');
 
+// handle errors
+const handleErrors = (err) => {
+    console.log(err.message, err.code);
+    let errors = { firstname : '', lastname: '', username: '', phonenumber: '', email: '', password: '' };
+  
+    // duplicate email error
+    if (err.code === 11000) {
+      errors.email = 'that email is already registered';
+      return errors;
+    }
+  
+    // validation errors
+    if (err.message.includes('User validation failed')) {
+      console.log(err);
+      Object.values(err.errors).forEach(({ properties }) => {
+        // console.log(val);
+        // console.log(properties);
+        errors[properties.path] = properties.message;
+      });
+    }
+  
+    return errors;
+  }
+
 //User Login
 const userLogin = async (req, res) => {
 
@@ -38,8 +62,9 @@ const userLogin = async (req, res) => {
 //User Register
 const userRegister = async (req, res) => {
 
+    const { firstname, lastname, username, phone, email, password, confirmpassword } = req.body;
+
     try {
-        const { firstname, lastname, username, phone, email, password, confirmpassword } = req.body;
 
         if (confirmpassword !== password) {
 
@@ -52,8 +77,8 @@ const userRegister = async (req, res) => {
                 return res.status(203).json({ status: false, message: 'This user is already registered' });
             }
 
-            const salt = await bcrypt.genSalt()
-            const hashedPassword = await bcrypt.hash(password, salt);
+            // const salt = await bcrypt.genSalt()
+            // const hashedPassword = await bcrypt.hash(password, salt);
 
             const userData = {
                 firstname: firstname,
@@ -61,7 +86,7 @@ const userRegister = async (req, res) => {
                 username: username.trim(),
                 phonenumber: phone,
                 email: email,
-                password: hashedPassword
+                password: password
             }
             const result = await createUser(userData)
 
@@ -69,7 +94,8 @@ const userRegister = async (req, res) => {
         }
 
     } catch (error) {
-        res.status(400).json({ status: false, error: error.message });
+        const err = handleErrors(error)
+        res.status(400).json({ status: false, message: err });
     }
 
 }
