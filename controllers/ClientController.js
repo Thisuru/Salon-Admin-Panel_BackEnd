@@ -5,6 +5,8 @@ const { getAll,
     updateClient,
     getClientByEmail
 } = require('../services/clientService');
+const AppError = require('../util/errorHandler/appError');
+const catchAsync = require('../util/errorHandler/catchAsync');
 const { userServerError } = require('../util/errorHandler/userServerError');
 
 //get all Clients
@@ -35,26 +37,20 @@ const clientGetAll = async (req, res) => {
 }
 
 //get the selected Client based on Params id 
-const clientGetSingleClient = async (req, res) => {
+const clientGetSingleClient = catchAsync(async (req, res, next) => {
     const id = req.params.id;
-
-    try {
-        const result = await getSingle(id)
-        if (!result) {
-            res.status(404).send({ message: `Not found user with id ${id}` })
-        } else {
-            res.send(result)
-        }
-    } catch (error) {
-        console.log(error);
-        res.status(400).send({ message: `Erro retrieving user with id= ${id}` })
+    const result = await getSingle(id)
+    if (!result) {
+        throw new AppError('Record not found!', 404);
+    } else {
+        res.send(result)
     }
-}
+})
 
 //Client create post API call (Save form data in db)
 const clientCreatePost = async (req, res) => {
 
-    const { firstname, lastname, phonenumber, email} = req.body
+    const { firstname, lastname, phonenumber, email } = req.body
 
     try {
         const user = await getClientByEmail(email)
@@ -65,12 +61,12 @@ const clientCreatePost = async (req, res) => {
                 message: 'This email is already in use.'
             });
         } else {
-            const result = await createPost({ firstname, lastname, phonenumber, email})
+            const result = await createPost({ firstname, lastname, phonenumber, email })
             res.send(result)
         }
 
     } catch (error) {
-        const errors = { firstname : '', lastname: '', username: '', phonenumber: '' };
+        const errors = { firstname: '', lastname: '', username: '', phonenumber: '' };
         userServerError(error, errors, 'Client', res)
 
         // let err = userServerError(error, errors, 'Client')
@@ -80,7 +76,7 @@ const clientCreatePost = async (req, res) => {
 
 //delete selected Client 
 const clientDelete = async (req, res) => {
-    
+
     try {
         const id = req.params.id;
         const result = await deleteClient(id)
