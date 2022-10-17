@@ -73,8 +73,8 @@ const userRegister = async (req, res) => {
     } catch (error) {
         const errors = { firstname : '', lastname: '', username: '', phonenumber: '', email: '', password: '' };
         
-        const err = userServerError(error, errors, 'User')
-        res.status(400).json({ status: false, error: err });
+        userServerError(error, errors, 'User', res)
+        // res.status(400).json({ status: false, error: err });
     }
 
 }

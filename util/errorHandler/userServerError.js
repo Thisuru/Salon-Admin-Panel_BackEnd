@@ -1,5 +1,5 @@
 // handle errors
-const userServerError = (err, errors, modelName) => {
+const userServerError = (err, errors, modelName, res) => {
     console.log(err.message, err.code);
     // let errors = { firstname : '', lastname: '', username: '', phonenumber: '', email: '', password: '' };
 
@@ -17,7 +17,8 @@ const userServerError = (err, errors, modelName) => {
       });
     }
   
-    return errors;
+    // return errors;
+    return res.status(400).send({ status: false, error: errors || "Error creating the " + modelName + "!" })
   }
 
   module.exports = {

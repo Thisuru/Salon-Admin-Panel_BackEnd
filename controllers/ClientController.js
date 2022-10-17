@@ -71,9 +71,10 @@ const clientCreatePost = async (req, res) => {
 
     } catch (error) {
         const errors = { firstname : '', lastname: '', username: '', phonenumber: '' };
+        userServerError(error, errors, 'Client', res)
 
-        let err = userServerError(error, errors, 'Client')
-        res.status(400).send({ status: false, error: err || "Error creating the Client!" })
+        // let err = userServerError(error, errors, 'Client')
+        // res.status(400).send({ status: false, error: err || "Error creating the Client!" })
     }
 }
 
