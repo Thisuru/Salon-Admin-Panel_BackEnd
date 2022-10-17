@@ -88,9 +88,16 @@ const deleteClient = (id) => {
     return Client.findByIdAndDelete(id)
 }
 
-//update Client Service
+//Update Client
 const updateClient = (id, reqBody) => {
-    return Client.findByIdAndUpdate(id, reqBody, { useFindAndModify: false })
+    return Client.findByIdAndUpdate(id,
+        {
+            firstname: reqBody.firstname,
+            lastname: reqBody.lastname,
+            email : reqBody.email,
+            phonenumber: reqBody.phone,
+        },
+        { useFindAndModify: false })
 }
 
 module.exports = {

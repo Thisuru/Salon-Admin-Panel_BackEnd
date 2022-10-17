@@ -1,4 +1,3 @@
-const Client = require('../models/client');
 const { getAll,
     getSingle,
     deleteClient,
@@ -72,7 +71,7 @@ const clientCreatePost = async (req, res) => {
 
     } catch (error) {
         const errors = { firstname : '', lastname: '', username: '', phonenumber: '' };
-        
+
         let err = internalServerError(error, errors, 'Client')
         res.status(400).send({ status: false, error: err || "Error creating the Client!" })
     }
@@ -80,9 +79,9 @@ const clientCreatePost = async (req, res) => {
 
 //delete selected Client 
 const clientDelete = async (req, res) => {
-    const id = req.params.id;
-
+    
     try {
+        const id = req.params.id;
         const result = await deleteClient(id)
         if (!result) {
             res.status(404).send({ message: `Cannot Delete user with ${id}. Maybe user not found!` })
@@ -109,9 +108,9 @@ const clientUpdate = async (req, res) => {
             });
         } else {
             // const result = await Client.findByIdAndUpdate(id, req.body, { useFindAndModify: false})
-            const result = await Client.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+            const result = await updateClient(id, req.body)
             if (!result) {
-                res.status(404).send({ message: `Cannot Update user with ${id}. Maybe user not found!` })
+                res.status(404).send({ message: `Cannot Update client with ${id}. Maybe client not found!` })
             } else {
                 res.send(result)
             }
@@ -119,7 +118,7 @@ const clientUpdate = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(400).send({ message: "Error Update user information" })
+        res.status(400).send({ message: "Error Updating client information" })
     }
 }
 
