@@ -95,7 +95,7 @@ const updateClient = (id, reqBody) => {
             firstname: reqBody.firstname,
             lastname: reqBody.lastname,
             email : reqBody.email,
-            phonenumber: reqBody.phone,
+            phonenumber: reqBody.phonenumber,
         },
         { useFindAndModify: false })
 }
