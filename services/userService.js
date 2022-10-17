@@ -85,7 +85,7 @@ const updateUser = (id, reqBody) => {
             lastname: reqBody.lastname,
             username : reqBody.username,
             email : reqBody.email,
-            phonenumber: reqBody.phone,
+            phonenumber: reqBody.phonenumber,
         },
         { useFindAndModify: false })
 }

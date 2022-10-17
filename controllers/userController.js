@@ -127,8 +127,8 @@ const userUpdate = async (req, res) => {
 
     try {
         const user = await getUserByEmail(req.body.email)
-
-        if (user) {
+        
+        if (user && (id != user.id)) {
             return res.status(203).json({
                 status: false,
                 message: 'This email is already in use.'
