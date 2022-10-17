@@ -10,7 +10,7 @@ const { createUser,
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const jwt_decode = require('jwt-decode');
-const { internalServerError } = require('../util/errorHandler/InternalServerError');
+const { userServerError } = require('../util/errorHandler/userServerError');
 
 //User Login
 const userLogin = async (req, res) => {
@@ -73,7 +73,7 @@ const userRegister = async (req, res) => {
     } catch (error) {
         const errors = { firstname : '', lastname: '', username: '', phonenumber: '', email: '', password: '' };
         
-        const err = internalServerError(error, errors, 'User')
+        const err = userServerError(error, errors, 'User')
         res.status(400).json({ status: false, error: err });
     }
 

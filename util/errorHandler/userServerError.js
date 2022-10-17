@@ -1,5 +1,5 @@
 // handle errors
-const internalServerError = (err, errors, modelName) => {
+const userServerError = (err, errors, modelName) => {
     console.log(err.message, err.code);
     // let errors = { firstname : '', lastname: '', username: '', phonenumber: '', email: '', password: '' };
 
@@ -21,5 +21,5 @@ const internalServerError = (err, errors, modelName) => {
   }
 
   module.exports = {
-    internalServerError
+    userServerError
   }

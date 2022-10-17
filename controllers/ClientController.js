@@ -5,7 +5,7 @@ const { getAll,
     updateClient,
     getClientByEmail
 } = require('../services/clientService');
-const { internalServerError } = require('../util/errorHandler/InternalServerError');
+const { userServerError } = require('../util/errorHandler/userServerError');
 
 //get all Clients
 const clientGetAll = async (req, res) => {
@@ -72,7 +72,7 @@ const clientCreatePost = async (req, res) => {
     } catch (error) {
         const errors = { firstname : '', lastname: '', username: '', phonenumber: '' };
 
-        let err = internalServerError(error, errors, 'Client')
+        let err = userServerError(error, errors, 'Client')
         res.status(400).send({ status: false, error: err || "Error creating the Client!" })
     }
 }
