@@ -47,7 +47,6 @@ const clientGetSingleClient = catchAsync(async (req, res, next) => {
 
 //Client create post API call (Save form data in db)
 const clientCreatePost = async (req, res) => {
-
     const { firstname, lastname, phonenumber, email } = req.body
 
     try {
@@ -66,34 +65,27 @@ const clientCreatePost = async (req, res) => {
     } catch (error) {
         const errors = { firstname: '', lastname: '', username: '', phonenumber: '' };
         userServerError(error, errors, 'Client', res)
-
-        // let err = userServerError(error, errors, 'Client')
-        // res.status(400).send({ status: false, error: err || "Error creating the Client!" })
     }
 }
 
 //delete selected Client 
-const clientDelete = async (req, res) => {
-
-    try {
-        const id = req.params.id;
-        const result = await deleteClient(id)
-        if (!result) {
-            res.status(404).send({ message: `Cannot Delete user with ${id}. Maybe user not found!` })
-        } else {
-            res.send({ message: "User was deleted successfully!" })
-        }
-    } catch (error) {
-        console.log(error);
-        res.status(400).send({ message: `Could not delete User with id= ${id}` })
+const clientDelete = catchAsync(async (req, res, next) => {
+    const id = req.params.id;
+    const result = await deleteClient(id)
+    if (!result) {
+        throw new AppError('Cannot Delete client. Maybe client not found!', 404);
+    } else {
+        res.send({ message: "User was deleted successfully!" })
     }
-}
+})
 
 //update selected client
 const clientUpdate = async (req, res) => {
     const id = req.params.id;
 
     try {
+        const id = req.params.id;
+
         const user = await getClientByEmail(req.body.email)
 
         if (user && (id != user.id)) {
