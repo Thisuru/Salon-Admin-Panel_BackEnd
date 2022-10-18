@@ -9,6 +9,7 @@ const reservationRoutes = require('./routes/reservationRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const userRoutes = require('./routes/userRoutes');
 const AppError = require('./util/errorHandler/appError');
+const errorController = require('./util/errorHandler/errorController');
 
 require('dotenv').config()
 
@@ -41,11 +42,4 @@ app.all('*', (req, res, next) => {
     throw new AppError(`Requested URL ${req.path} not found!`, 404);
   })
 
-app.use((err, req, res, next) => {
-    const statusCode = err.statusCode || 500;
-    res.status(statusCode).json({
-        success : 0,
-        message: err.message,
-        stack:err.stack
-    })
-})
+app.use(errorController)

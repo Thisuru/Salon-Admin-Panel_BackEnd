@@ -14,8 +14,6 @@ const clientGetAll = async (req, res) => {
     try {
         const params = req.query
         const { data, count } = await getAll(params)
-
-        console.log("data1: ", data);
         const response = {
             clients: data.map(client => ({
                 id: client._id,
