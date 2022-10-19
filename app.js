@@ -8,6 +8,8 @@ const stylistRoutes = require('./routes/stylistRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const userRoutes = require('./routes/userRoutes');
+const AppError = require('./util/errorHandler/appError');
+const errorController = require('./util/errorHandler/errorController');
 
 require('dotenv').config()
 
@@ -34,3 +36,11 @@ app.use('/api/v1/stylists', stylistRoutes)
 app.use('/api/v1/reservation', reservationRoutes)
 app.use('/api/v1/sendEmail', emailRoutes)
 app.use('/api/v1/user', userRoutes)
+
+//When route does not match any API endpoint, it captures here
+app.all('*', (req, res, next) => {
+    throw new AppError(`Requested URL ${req.path} not found!`, 404);
+  })
+
+//Global Error Handler Middleware
+app.use(errorController)

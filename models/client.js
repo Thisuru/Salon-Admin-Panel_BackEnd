@@ -1,26 +1,27 @@
 const mongoose = require('mongoose');
+const { isEmail } = require('validator');
 const Schema = mongoose.Schema;
 
 const clientSchema = new Schema({
     firstname: {
         type: String,
-        require: true
+        required: [true, 'First name is required']
     },
     lastname: {
         type: String,
-        require: true
+        required: [true, 'Last name is required']
     },
     phonenumber: {
         type: String,
-        require: true
+        required: [true, 'Phonenumber is required']
     },
     email: {
         type: String,
-        require: true
+        required: [true, 'Please enter an email'],
+        unique: true,
+        lowercase: true,
+        validate: [isEmail, 'Please enter a valid email']
     }
-    // reservation : [
-    //     { type: mongoose.Schema.Types.ObjectId, ref: 'Reservation'}
-    // ]
 }, { timestamps: true });
 
 //creating the model

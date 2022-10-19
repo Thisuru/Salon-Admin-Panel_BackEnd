@@ -71,13 +71,13 @@ const getClientByEmail = (email) => {
 }
 
 //Reservation create post API call service
-const createPost = (requestBody) => {
+const createPost = ({ firstname, lastname, phonenumber, email}) => {
 
     const client = new Client({
-        firstname: requestBody.firstname,
-        lastname: requestBody.lastname,
-        phonenumber: requestBody.phonenumber,
-        email: requestBody.email
+        firstname: firstname,
+        lastname: lastname,
+        phonenumber: phonenumber,
+        email: email
     });
 
     return Client.create(client)
@@ -88,9 +88,16 @@ const deleteClient = (id) => {
     return Client.findByIdAndDelete(id)
 }
 
-//update Client Service
+//Update Client
 const updateClient = (id, reqBody) => {
-    return Client.findByIdAndUpdate(id, reqBody, { useFindAndModify: false })
+    return Client.findByIdAndUpdate(id,
+        {
+            firstname: reqBody.firstname,
+            lastname: reqBody.lastname,
+            email : reqBody.email,
+            phonenumber: reqBody.phonenumber,
+        },
+        { useFindAndModify: false })
 }
 
 module.exports = {
