@@ -12,6 +12,7 @@ const bcrypt = require('bcrypt');
 const jwt_decode = require('jwt-decode');
 const { userServerError } = require('../util/errorHandler/userServerError');
 const catchAsync = require("../util/errorHandler/catchAsync");
+const AppError = require("../util/errorHandler/appError");
 
 //User Login
 const userLogin = async (req, res) => {
@@ -101,63 +102,44 @@ const userGetAll = catchAsync(async (req, res, next) => {
 })
 
 //delete selected User 
-const userDelete = async (req, res, next) => {
+const userDelete = catchAsync(async (req, res) => {
     const id = req.params.id;
-
-    try {
-        const result = await deleteUser(id)
-        if (!result) {
-            res.status(404).send({ message: `Cannot Delete user with ${id}. Maybe user not found!` })
-        } else {
-            res.send({ message: "User was deleted successfully!" })
-        }
-    } catch (error) {
-        res.status(500).send({ message: `Could not delete User with id= ${id}` })
+    const result = await deleteUser(id)
+    if (!result) {
+        res.status(404).send({ message: `Cannot Delete user with ${id}. Maybe user not found!` })
+    } else {
+        res.send({ message: "User was deleted successfully!" })
     }
-}
+})
 
 //update selected User
-const userUpdate = async (req, res) => {
+const userUpdate = catchAsync(async (req, res) => {
     const id = req.params.id;
+    const user = await getUserByEmail(req.body.email)
 
-    try {
-        const user = await getUserByEmail(req.body.email)
+    if (user && (id != user.id)) {
+        throw new AppError('This email is already in use!', 203);
+    } else {
+        const result = await updateUser(id, req.body)
 
-        if (user && (id != user.id)) {
-            return res.status(203).json({
-                status: false,
-                message: 'This email is already in use.'
-            });
-        } else {
-            const result = await updateUser(id, req.body)
-
-            if (!result) {
-                res.status(404).send({ message: `Cannot Update user with ${id}. Maybe user not found!` })
-            } else {
-                res.send(result)
-            }
-        }
-
-    } catch (error) {
-        res.status(500).send({ message: "Error Update user information" })
-    }
-}
-
-//get the selected Admin User based on Params id 
-const getSingleUser = async (req, res) => {
-    const id = req.params.id;
-
-    try {
-        const result = await getSingle(id)
         if (!result) {
-            res.status(404).send({ message: `Not found user with id ${id}` })
+            throw new AppError('Cannot Update user. Maybe user not found!', 404);
         } else {
             res.send(result)
         }
-    } catch (error) {
-        res.status(500).send({ message: `Erro retrieving user with id= ${id}` })
     }
-}
+})
+
+//get the selected Admin User based on Params id 
+const getSingleUser = catchAsync(async (req, res, next) => {
+    const id = req.params.id;
+    const result = await getSingle(id)
+    if (!result) {
+        throw new AppError('User Not Found!', 404);
+    } else {
+        res.send(result)
+    }
+})
 
 //Decode register token and check user availability
 const decodeTokenCheckAvailability = async (req, res) => {
