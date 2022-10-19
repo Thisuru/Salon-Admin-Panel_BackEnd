@@ -4,28 +4,25 @@ const Schema = mongoose.Schema;
 const reservationSchema = new Schema({
     client: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Client'
+        ref: 'Client',
+        required: [true, 'client id is required']
     },
     service: {
         type: String,
-        require: true
+        required: [true, 'Service is required']
     },
     stylist: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Stylist'
+        ref: 'Stylist',
+        required: [true, 'Stylist id is required']
     },
-    // date: {
-    //     type: Date,
-    //     require: true,
-    //     default: Date.now,
-    // },
     startTime: {
         type: Date,
-        require: true,
+        required: [true, 'Start time is required']
     },
     endTime: {
         type: Date,
-        require: true,
+        required: [true, 'End time is required']
     },
     status: {
         type: String,

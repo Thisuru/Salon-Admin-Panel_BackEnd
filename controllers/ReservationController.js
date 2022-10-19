@@ -13,78 +13,52 @@ const { getAll,
 
 const { objectIdValider } = require('../services/objectIdValiderService');
 const Reservation = require('../models/reservation');
+const catchAsync = require('../util/errorHandler/catchAsync');
+const AppError = require('../util/errorHandler/appError');
 
 //get all Reservation
-const reservationGetAll = async (req, res) => {
-    try {
-        // const currentPage = req.query.page
-        const params = req.query
-        const { data } = await getAll(params)
-        console.log("DATA: ", data);
-        const totalPages = await getAllReservationCount();
+const reservationGetAll = catchAsync(async (req, res) => {
+    const params = req.query
+    const { data } = await getAll(params)
+    const totalPages = await getAllReservationCount();
 
-        const response = {
-            reservations: data.map(reservation => ({
-                id: reservation._id,
-                client: reservation.clients,
-                service: reservation.service,
-                stylist: reservation.stylists,
-                startTime: reservation.startTime,
-                endTime: reservation.endTime,
-                status: reservation.status
-            })),
-            totalPages,
-            currentPage: params?.page
-        }
-
-        res.send(response)
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({ message: error.message || "Error Occurred while retriving user information" })
+    const response = {
+        reservations: data.map(reservation => ({
+            id: reservation._id,
+            client: reservation.clients,
+            service: reservation.service,
+            stylist: reservation.stylists,
+            startTime: reservation.startTime,
+            endTime: reservation.endTime,
+            status: reservation.status
+        })),
+        totalPages,
+        currentPage: params?.page
     }
-}
+
+    res.send(response)
+})
 
 //get the selected reservation based on Params id 
-const reservationGetSingle = async (req, res) => {
-
-    try {
-        const id = req.params.id;
-        const result = await getSingle(id)
-        if (!result) {
-            res.status(404).send({ message: `Not found user with id ${id}` })
-        } else {
-            res.send(result)
-        }
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({ message: `Erro retrieving user with id= ${id}` })
+const reservationGetSingle = catchAsync(async (req, res) => {
+    const id = req.params.id;
+    const result = await getSingle(id)
+    if (!result) {
+        throw new AppError('User not Found!.', 404);
+    } else {
+        res.send(result)
     }
-}
+})
 
 //Reservation create post API call (Save form data in db)
-const reservationCreatePost = async (req, res) => {
-
-    if (!req.body) {
-        res.status(400).send({ message: "Content can not be empty!" });
-        return;
-    }
-
-    try {
-
+const reservationCreatePost = catchAsync(async (req, res, next) => {
         const reqBody = req.body;
-
         objectIdValider(reqBody.client, 'client');
         objectIdValider(reqBody.stylist, 'stylist');
 
         const result = await createPost(reqBody)
         res.send(result)
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({ message: error.message || "Error Update user information" })
-    }
-}
+})
 
 //delete selected Reservation 
 const reservationDelete = async (req, res) => {
