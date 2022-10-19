@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const jwt_decode = require('jwt-decode');
 const { userServerError } = require('../util/errorHandler/userServerError');
+const catchAsync = require("../util/errorHandler/catchAsync");
 
 //User Login
 const userLogin = async (req, res) => {
@@ -71,8 +72,8 @@ const userRegister = async (req, res) => {
         }
 
     } catch (error) {
-        const errors = { firstname : '', lastname: '', username: '', phonenumber: '', email: '', password: '' };
-        
+        const errors = { firstname: '', lastname: '', username: '', phonenumber: '', email: '', password: '' };
+
         userServerError(error, errors, 'User', res)
         // res.status(400).json({ status: false, error: err });
     }
@@ -80,33 +81,27 @@ const userRegister = async (req, res) => {
 }
 
 //get all Admin Users
-const userGetAll = async (req, res) => {
-    try {
-        const params = req.query
-        const { data, count } = await getAll(params)
-        console.log("userGetAll data: ", data);
-        const response = {
-            users: data.map(user => ({
-                id: user._id,
-                firstname: user.firstname,
-                lastname: user.lastname,
-                username: user.username, 
-                phonenumber: user.phonenumber,
-                email: user.email
-            }
-            )),
-            totalPages: count,
-            currentPage: params?.page
+const userGetAll = catchAsync(async (req, res, next) => {
+    const params = req.query
+    const { data, count } = await getAll(params)
+    const response = {
+        users: data.map(user => ({
+            id: user._id,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            username: user.username,
+            phonenumber: user.phonenumber,
+            email: user.email
         }
-
-        res.send(response)
-    } catch (error) {
-        res.status(500).send({ message: error.message || "Error Occurred while retriving user information" })
+        )),
+        totalPages: count,
+        currentPage: params?.page
     }
-}
+    res.send(response)
+})
 
 //delete selected User 
-const userDelete = async (req, res) => {
+const userDelete = async (req, res, next) => {
     const id = req.params.id;
 
     try {
@@ -127,7 +122,7 @@ const userUpdate = async (req, res) => {
 
     try {
         const user = await getUserByEmail(req.body.email)
-        
+
         if (user && (id != user.id)) {
             return res.status(203).json({
                 status: false,
@@ -171,7 +166,7 @@ const decodeTokenCheckAvailability = async (req, res) => {
 
         var token = req.body.token;
         var decoded = jwt_decode(token);
-        
+
         const user = await getUserByEmail(decoded.email)
 
         if (user) {

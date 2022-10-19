@@ -42,4 +42,5 @@ app.all('*', (req, res, next) => {
     throw new AppError(`Requested URL ${req.path} not found!`, 404);
   })
 
+//Global Error Handler Middleware
 app.use(errorController)
