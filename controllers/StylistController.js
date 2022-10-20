@@ -74,8 +74,8 @@ const getEachStylistTimePerWeek = async (req, res) => {
             let start = reservation[0].startTime;
             let end = reservation[0].endTime
             let minutesDifference = getTimeDifference(start, end);
-
-            middleReservationObj.name = reservation[0].stylistFullName
+            
+            middleReservationObj.name = reservation[0].stylists.firstname
             middleReservationObj.WeeklyTimeInMins = minutesDifference
 
             getSingleReservation.push(middleReservationObj)
