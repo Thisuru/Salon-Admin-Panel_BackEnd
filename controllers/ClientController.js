@@ -21,7 +21,7 @@ const clientGetAll = catchAsync(async (req, res, next) => {
             email: client.email
         }
         )),
-        totalPages: count,
+        allClientCount: count,
         currentPage: params?.page
     }
     res.send(response)

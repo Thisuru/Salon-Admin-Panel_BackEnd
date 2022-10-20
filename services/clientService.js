@@ -3,29 +3,23 @@ const Client = require('../models/client');
 //get all Clients service
 const getAll = async (params) => {
     // return Client.find().sort({ createdAt: -1 })
-
-    // const sort = params?.sort
-    // const page = Math.max(0, params?.page || 1)
-    // const perPage = params?.limit;
-
-    const sort = 'OLDEST'
+    console.log("Params: ", params);
+    const sort = params?.sort
     const page = Math.max(0, params?.page || 1)
-    const perPage = 30;
+    const limit = params?.limit;
+    let field = params?.field
 
     let sortQuery = {};
     let filters = {}
 
-    if (sort == 'NEWEST') {
-        sortQuery = {
-            _id: -1,
-        };
+    if (sort == 'desc') {
+        sortQuery[field] = -1
     }
 
-    if (sort == 'OLDEST') {
-        sortQuery = {
-            _id: 1,
-        };
+    if (sort == 'asc') {
+        sortQuery[field] = 1
     }
+    console.log("sortQuery: ", sortQuery);
 
     if (params?.search) {
         // const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
@@ -43,12 +37,11 @@ const getAll = async (params) => {
 
     const resultCount = await client.count();
 
-    if (perPage) {
-        console.log("ParamsPageee", params?.page || 1);
-        client.limit(perPage * 1)
+    if (limit) {
+        client.limit(limit * 1)
     }
     if (page) {
-        client.skip(perPage * (page - 1))
+        client.skip(limit * (page))
     }
     return { data: await client.toArray(), count: resultCount }
 }
